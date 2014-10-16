@@ -18,6 +18,11 @@ public abstract class Piece {
 		generateAvailableMoves();
 	}
 	
+	public Piece(int[] location, boolean alignment){
+		this.location = location;
+		generateAvailableMoves();
+		this.alignment = alignment;
+	}
 	
 	
 	//generates list of available moves and returns the list.  We generate each time to make sure we get an up-to-date list
@@ -53,7 +58,7 @@ public abstract class Piece {
 
 
 
-	public boolean isAlignment() {
+	public boolean getAlignment() {
 		return alignment;
 	}
 

@@ -40,8 +40,12 @@ public class ChessApp {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
+		frame.setBounds(100, 100, 600, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		Board board = new Board(true, false);
+		BoardDisplay testBoard = new BoardDisplay(frame.getWidth(), frame.getHeight(), board);
+		frame.add(testBoard);
 	}
 
 }

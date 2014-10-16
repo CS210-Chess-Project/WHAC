@@ -12,6 +12,11 @@ public class Bishop extends Piece {
 		// TODO Auto-generated constructor stub
 	}
 
+	public Bishop(int[] location, boolean alignment) {
+		super(location, alignment);
+		// TODO Auto-generated constructor stub
+	}
+
 	@Override
 	protected void generateAvailableMoves() {
 		// TODO Auto-generated method stub

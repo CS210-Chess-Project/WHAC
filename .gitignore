@@ -1,0 +1,15 @@
+.classpath
+.project
+.settings/org.eclipse.jdt.core.prefs
+bin/Bishop.class
+bin/Board.class
+bin/BoardDisplay.class
+bin/ChessApp$1.class
+bin/ChessApp.class
+bin/EmptySpace.class
+bin/King.class
+bin/Knight.class
+bin/Pawn.class
+bin/Piece.class
+bin/Queen.class
+bin/Rook.class
