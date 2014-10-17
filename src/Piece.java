@@ -1,4 +1,5 @@
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 /**
@@ -12,17 +13,23 @@ public abstract class Piece {
 	private int[] location; //the 2D location of the piece on the board.
 	protected ArrayList<int[]> availableMoves;
 	protected ArrayList<int[]> captureMoves;
-	private boolean alignment;  //this will let us know if the piece is controlled by us or the enemy;  True = our piece; false = enemy piece
+	protected boolean alignment;  //this will let us know if the piece is controlled by us or the enemy;  True = our piece; false = enemy piece
+	protected BufferedImage image; //image to render when piece is drawn
 	
 	public Piece(int[] location){
 		this.location = location;
 		generateAvailableMoves();
+		generateCaptureMoves();
+		loadImage();
 	}
 	
 	public Piece(int[] location, boolean alignment){
 		this.location = location;
 		generateAvailableMoves();
+		generateCaptureMoves();
 		this.alignment = alignment;
+		loadImage();
+		
 	}
 	
 	
@@ -53,8 +60,14 @@ public abstract class Piece {
 	/**
 	 * Painting instructions for the GUI;  Paints onto the G2D context g
 	 */
-	protected abstract void paintSelf(int width, int height, Graphics2D g);
+	protected void paintSelf(int width, int height, Graphics2D g){
+		if (image!= null){
+			g.drawImage(this.image,this.getLocation()[1]*width + 10, this.getLocation()[0]*height + 10, width-20, height-20, null);
+		}
+	}
 
+	
+	protected abstract void loadImage();
 
 	//  Getters/Setters
 

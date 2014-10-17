@@ -1,4 +1,7 @@
-import java.awt.Graphics2D;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 /**
  * Class to represent a rook
@@ -30,9 +33,19 @@ public class Rook extends Piece {
 	}
 
 	@Override
-	protected void paintSelf(int width, int height, Graphics2D g) {
+	protected void loadImage() {
 		// TODO Auto-generated method stub
-		
+		try {
+			if (this.alignment){ //i.e. if white piece then
+				this.image = ImageIO.read(new File("resources" + File.separator + "white-rook.png"));
+			}
+			else{
+				this.image = ImageIO.read(new File("resources" + File.separator + "black-rook.png"));
+			}
+		} catch (IOException e) {
+			System.out.println("Exception thrown");
+			image = null;
+		}
 	}
 
 }

@@ -21,38 +21,38 @@ public class Board {
 		this.boardArray = new Piece[5][5];
 		//initialize pawns on 2nd and 4th rows
 		for (int x = 0; x < 5; x++){
-			int[] locationBlack = {x,1};
-			boardArray[x][1] = new Pawn(locationBlack, !playerIsWhite); //black pawns
-			int[] locationWhite = {x,3};
-			boardArray[x][3] = new Pawn(locationWhite, playerIsWhite); //white pawns
+			int[] locationBlack = {1,x};
+			boardArray[1][x] = new Pawn(locationBlack, !playerIsWhite); //black pawns
+			int[] locationWhite = {3,x};
+			boardArray[3][x] = new Pawn(locationWhite, playerIsWhite); //white pawns
 			
 			//empty spaces:
-			boardArray[x][2] = new EmptySpace(new int[]{x,2});
+			boardArray[2][x] = new EmptySpace(new int[]{x,2});
 		}
 		
 		//setup white - white pieces are the same in both easy and advanced mode
 		//white pieces:
-		boardArray[0][4] = new Rook(new int[]{0,4}, playerIsWhite);
-		boardArray[1][4] = new Knight(new int[]{1,4}, playerIsWhite);
-		boardArray[2][4] = new Bishop(new int[]{2,4}, playerIsWhite);
-		boardArray[3][4] = new Queen(new int[]{3,4}, playerIsWhite);
+		boardArray[4][0] = new Rook(new int[]{4,0}, playerIsWhite);
+		boardArray[4][1] = new Knight(new int[]{4,1}, playerIsWhite);
+		boardArray[4][2] = new Bishop(new int[]{4,2}, playerIsWhite);
+		boardArray[4][3] = new Queen(new int[]{4,3}, playerIsWhite);
 		boardArray[4][4] = new King(new int[]{4,4}, playerIsWhite);
 		
 		//easy mode does NOT have the pieces mirrored
 		if (isEasyMode){
 			//black pieces:
 			boardArray[0][0] = new King(new int[]{0,0}, !playerIsWhite);
-			boardArray[1][0] = new Queen(new int[]{1,0}, !playerIsWhite);
-			boardArray[2][0] = new Bishop(new int[]{2,0}, !playerIsWhite);
-			boardArray[3][0] = new Knight(new int[]{3,0}, !playerIsWhite);
-			boardArray[4][0] = new Rook(new int[]{4,0}, !playerIsWhite);
+			boardArray[0][1] = new Queen(new int[]{0,1}, !playerIsWhite);
+			boardArray[0][2] = new Bishop(new int[]{0,2}, !playerIsWhite);
+			boardArray[0][3] = new Knight(new int[]{0,3}, !playerIsWhite);
+			boardArray[0][4] = new Rook(new int[]{0,4}, !playerIsWhite);
 		}
 		//advanced mode has mirrored pieces
 		else{
-			boardArray[4][0] = new King(new int[]{4,0}, !playerIsWhite);
-			boardArray[3][0] = new Queen(new int[]{3,0}, !playerIsWhite);
-			boardArray[2][0] = new Bishop(new int[]{2,0}, !playerIsWhite);
-			boardArray[1][0] = new Knight(new int[]{1,0}, !playerIsWhite);
+			boardArray[0][4] = new King(new int[]{0,4}, !playerIsWhite);
+			boardArray[0][3] = new Queen(new int[]{0,3}, !playerIsWhite);
+			boardArray[0][2] = new Bishop(new int[]{0,2}, !playerIsWhite);
+			boardArray[0][1] = new Knight(new int[]{0,1}, !playerIsWhite);
 			boardArray[0][0] = new Rook(new int[]{0,0}, !playerIsWhite);
 		}
 	}

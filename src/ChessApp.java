@@ -2,10 +2,13 @@ import java.awt.EventQueue;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.Font;
 
 /**
@@ -176,6 +179,76 @@ public class ChessApp {
 		Board board = new Board(true, easyMode);
 		BoardDisplay graphicalBoard = new BoardDisplay(frame.getContentPane().getWidth(), frame.getContentPane().getHeight(), board);
 		frame.getContentPane().add(graphicalBoard);
+		
+		//wire stuff up:
+		wireUpMouseListener(graphicalBoard);
+	}
+	
+	private void wireUpMouseListener(BoardDisplay bd){
+		System.out.println("Wiring up stuff");
+		bd.addMouseListener(new MouseListener(){
+			
+			Piece selectedPiece;
+			
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				// do nothing
+			}
+			public void mouseEntered(MouseEvent arg0) {
+				//do nothing
+			}
+			public void mouseExited(MouseEvent arg0) {
+				//do nothing
+			}
+			
+			//click down event.  Get and highlight available moves.
+			public void mousePressed(MouseEvent arg0) {
+				Piece pieceClicked = getPieceClicked(arg0.getX(), arg0.getY(), bd.getBoard());
+				String color = "White";
+				if (!pieceClicked.getAlignment()){
+					color = "Black";
+				}
+				System.out.println("Clicked Piece: " + color + " " + pieceClicked.toString());
+				
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			
+		});
+	}
+	
+	private Piece getPieceClicked(int clickX, int clickY, Board bd){
+		int xClicked = clickX;
+		int yClicked = clickY;
+		int colNum = 0;
+		int rowNum = 0;
+		//determine colNum from x coordinate clicked
+		if (between(xClicked, 0, frame.getWidth()/5)){ colNum = 0;}
+		else if (between(xClicked, frame.getWidth()/5, frame.getWidth()*2/5)){ colNum = 1;}
+		else if (between(xClicked, frame.getWidth()*2/5, frame.getWidth()*3/5)){ colNum = 2;}
+		else if (between(xClicked, frame.getWidth()*3/5, frame.getWidth()*4/5)){ colNum = 3;}
+		else if (between(xClicked, frame.getWidth()*4/5, frame.getWidth()*5/5)){ colNum = 4;}
+		//determine rowNum from y coord
+		if (between(yClicked, 0, frame.getHeight()/5)){ rowNum = 0;}
+		else if(between(yClicked, frame.getHeight()/5, frame.getHeight()*2/5)){ rowNum = 1;}
+		else if(between(yClicked, frame.getHeight()*2/5, frame.getHeight()*3/5)){ rowNum = 2;}
+		else if(between(yClicked, frame.getHeight()*3/5, frame.getHeight()*4/5)){ rowNum = 3;}
+		else if(between(yClicked, frame.getHeight()*4/5, frame.getHeight()*5/5)){ rowNum = 4;}
+		
+		//grab the corresponding piece from board:
+		return bd.getBoardArray()[rowNum][colNum];
+	}
+	
+
+	private boolean between(int num, int lower, int higher){
+		return (lower < num && higher > num);
 	}
 
 }
