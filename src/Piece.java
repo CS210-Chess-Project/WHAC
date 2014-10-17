@@ -10,7 +10,8 @@ import java.util.ArrayList;
  */
 public abstract class Piece {
 	private int[] location; //the 2D location of the piece on the board.
-	private ArrayList<int[]> availableMoves;
+	protected ArrayList<int[]> availableMoves;
+	protected ArrayList<int[]> captureMoves;
 	private boolean alignment;  //this will let us know if the piece is controlled by us or the enemy;  True = our piece; false = enemy piece
 	
 	public Piece(int[] location){
@@ -30,6 +31,11 @@ public abstract class Piece {
 		this.generateAvailableMoves();
 		return availableMoves;
 	}	
+	
+	public ArrayList<int[]> getCaptureMoves(){
+		this.generateCaptureMoves();
+		return captureMoves;
+	}
 
 	/**
 	 * This method is implemented in subclasses and should always cause the field availableMoves to be instantiated
@@ -37,6 +43,12 @@ public abstract class Piece {
 	 */
 	protected abstract void generateAvailableMoves();
 	
+	
+	/**
+	 * This method is also implemented in subclasses and generates a list of available capture moves
+	 * It should also be called anytime the list of capture moves needs to be updated or retrieved
+	 */
+	protected abstract void generateCaptureMoves();
 	
 	/**
 	 * Painting instructions for the GUI;  Paints onto the G2D context g

@@ -13,3 +13,4 @@ bin/Pawn.class
 bin/Piece.class
 bin/Queen.class
 bin/Rook.class
+*.class

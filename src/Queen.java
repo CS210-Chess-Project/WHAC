@@ -29,4 +29,10 @@ public class Queen extends Piece {
 		
 	}
 
+	@Override
+	protected void generateCaptureMoves() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

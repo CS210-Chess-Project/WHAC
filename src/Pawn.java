@@ -24,6 +24,12 @@ public class Pawn extends Piece {
 	}
 
 	@Override
+	protected void generateCaptureMoves() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
 	protected void paintSelf(int width, int height, Graphics2D g) {
 		// TODO Auto-generated method stub
 		
