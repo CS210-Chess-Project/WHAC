@@ -61,6 +61,7 @@ public abstract class Piece {
 	 * Painting instructions for the GUI;  Paints onto the G2D context g
 	 */
 	protected void paintSelf(int width, int height, Graphics2D g){
+		
 		if (image!= null){
 			g.drawImage(this.image,this.getLocation()[1]*width + 10, this.getLocation()[0]*height + 10, width-20, height-20, null);
 		}

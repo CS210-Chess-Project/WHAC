@@ -3,6 +3,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
@@ -13,6 +14,7 @@ import javax.swing.JPanel;
  */
 public class BoardDisplay extends JPanel {
 	private Board board;
+	private ArrayList<int[]> highlightedMoves = new ArrayList<int[]>();
 
 	public BoardDisplay(Board b){
 		this.board = b;
@@ -57,10 +59,22 @@ public class BoardDisplay extends JPanel {
 				boardArray[x][y].paintSelf(this.getWidth()/5, this.getHeight()/5, myG); //paint each piece
 			}
 		}
+		
+		//paint highlighted cells if there are any
+		myG.setColor(Color.GREEN);
+		for(int[] move:highlightedMoves){
+			
+			Rectangle2D.Double thisBGCell = new Rectangle2D.Double(move[1]*xSpacing,move[0]*ySpacing, xSpacing, ySpacing);
+			myG.fill(thisBGCell);
+		}
 	}
 
 	public Board getBoard(){
 		return this.board;
 
+	}
+
+	public void setHighlightedMoves(ArrayList<int[]> moves){
+		this.highlightedMoves  = moves;
 	}
 }

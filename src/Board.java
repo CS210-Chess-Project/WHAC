@@ -61,14 +61,14 @@ public class Board {
 		this.boardArray = boardState;
 	}
 
-	public void makeOpponentMove(Piece p, int[][] toPosition){
-		//TODO: should move the opponents piece p to the specified position and update the boardArray
+	//moves a piece to a specified row and column
+	public void makeMove(Piece p, int row, int col){
+		int[] location = p.getLocation(); //get current location
+		this.boardArray[location[0]][location[1]] = new EmptySpace(location);
+		p.setLocation(new int[]{row, col});
+		
+		boardArray[row][col] = p;
 	}
-
-	public void makeFriendlyMove(int lookAheadNumber){
-		this.boardArray = getNextMove(lookAheadNumber).getBoardArray();
-		//TODO also need to repaint board
-	}	
 
 	public Board getNextMove(int lookAheadNumber){
 		//TODO: This is where most of the work will be done.  We will do a minimax search for the best moves, looking ahead the specified number of turns
@@ -92,7 +92,7 @@ public class Board {
 		String returned = "";
 		for(int y = 0; y < boardArray.length; y++){
 			for (int x = 0; x < boardArray[0].length; x++){
-				returned = returned + boardArray[x][y].toString() + "|";
+				returned = returned + boardArray[y][x].toString() + "|";
 			}
 			returned = returned + "\n";
 		}
@@ -109,9 +109,14 @@ public class Board {
 		this.boardArray = boardArray;
 	}
 	
+	public Piece getPieceAt(int row, int col){
+		return boardArray[row][col];
+	}
+	
 	//test method
 	/*public static void main(String[] args){
 		Board board = new Board(true, false);
+		board.makeMove(board.getPieceAt(3,2), 1, 2);
 		System.out.println(board.toString());
 	}*/
 

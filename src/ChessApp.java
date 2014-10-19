@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.Font;
+import java.util.ArrayList;
 
 /**
  * Handles all the fiddly graphical stuff and ties everything together.
@@ -20,10 +21,25 @@ import java.awt.Font;
  */
 public class ChessApp {
 
+	//variables related to game type/state
 	private boolean singlePlayerGame;
 	private boolean easyMode;
 	private boolean playersMove = true; //true = player 1, false = player 2 or computer
 	private boolean playerGoFirst = true;
+	private boolean gameOver = false;
+	
+	//variabled related to click events:
+	private int pressedX;
+	private int pressedY;
+	private int pressedRow;
+	private int pressedCol;
+	private int releasedRow;
+	private int releasedCol;
+	private int releasedX;
+	private int releasedY;
+	
+	//variabled for global graphical components
+	private BoardDisplay graphicalBoard;
 
 	private JFrame frame;
 
@@ -177,7 +193,7 @@ public class ChessApp {
 		singlePlayerGame = false;
 		//create board and wire up listeners
 		Board board = new Board(true, easyMode);
-		BoardDisplay graphicalBoard = new BoardDisplay(frame.getContentPane().getWidth(), frame.getContentPane().getHeight(), board);
+		this.graphicalBoard = new BoardDisplay(frame.getContentPane().getWidth(), frame.getContentPane().getHeight(), board);
 		frame.getContentPane().add(graphicalBoard);
 		
 		//wire stuff up:
@@ -203,13 +219,16 @@ public class ChessApp {
 			
 			//click down event.  Get and highlight available moves.
 			public void mousePressed(MouseEvent arg0) {
-				Piece pieceClicked = getPieceClicked(arg0.getX(), arg0.getY(), bd.getBoard());
-				String color = "White";
-				if (!pieceClicked.getAlignment()){
-					color = "Black";
-				}
-				System.out.println("Clicked Piece: " + color + " " + pieceClicked.toString());
 				
+				selectedPiece = getPieceClicked(arg0.getX(), arg0.getY(), bd.getBoard());
+//				ArrayList<int[]> captureMoves = selectedPiece.getCaptureMoves();
+//				ArrayList<int[]> nonCaptureMoves = selectedPiece.getAvailableMoves();
+//				if (captureMoves.size()>0){
+//					graphicalBoard.setHighlightedMoves(captureMoves);
+//				}
+//				else{
+//					graphicalBoard.setHighlightedMoves(nonCaptureMoves);
+//				}
 				// TODO Auto-generated method stub
 				
 			}
@@ -217,7 +236,17 @@ public class ChessApp {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
 				// TODO Auto-generated method stub
-				
+				getLocationReleased(arg0.getX(), arg0.getY(), bd.getBoard()); //sets constants releasedCol and releasedRow
+				if (releasedCol == pressedCol && releasedRow == pressedRow){
+					//do nothing.  attempted move to same spot
+				}
+				else{
+					//selectedPiece //= bd.getBoard().getBoardArray()[pressedRow][pressedCol];
+					bd.getBoard().makeMove(selectedPiece, releasedRow, releasedCol);
+					bd.repaint();
+					
+					playersMove = !playersMove; //make it the other persons move
+				}
 			}
 			
 			
@@ -242,8 +271,43 @@ public class ChessApp {
 		else if(between(yClicked, frame.getHeight()*3/5, frame.getHeight()*4/5)){ rowNum = 3;}
 		else if(between(yClicked, frame.getHeight()*4/5, frame.getHeight()*5/5)){ rowNum = 4;}
 		
+		
+		//set corresponding constants
+		pressedRow = rowNum;
+		pressedCol = colNum;
+		pressedX = clickX;
+		pressedY = clickY;
+		
 		//grab the corresponding piece from board:
 		return bd.getBoardArray()[rowNum][colNum];
+	}
+	
+	private int[] getLocationReleased(int clickX, int clickY, Board bd){
+		//translates the x,y coords of a mouse released event into using row, col numbers
+		int xClicked = clickX;
+		int yClicked = clickY;
+		int colNum = 0;
+		int rowNum = 0;
+		//determine colNum from x coordinate clicked
+		if (between(xClicked, 0, frame.getWidth()/5)){ colNum = 0;}
+		else if (between(xClicked, frame.getWidth()/5, frame.getWidth()*2/5)){ colNum = 1;}
+		else if (between(xClicked, frame.getWidth()*2/5, frame.getWidth()*3/5)){ colNum = 2;}
+		else if (between(xClicked, frame.getWidth()*3/5, frame.getWidth()*4/5)){ colNum = 3;}
+		else if (between(xClicked, frame.getWidth()*4/5, frame.getWidth()*5/5)){ colNum = 4;}
+		//determine rowNum from y coord
+		if (between(yClicked, 0, frame.getHeight()/5)){ rowNum = 0;}
+		else if(between(yClicked, frame.getHeight()/5, frame.getHeight()*2/5)){ rowNum = 1;}
+		else if(between(yClicked, frame.getHeight()*2/5, frame.getHeight()*3/5)){ rowNum = 2;}
+		else if(between(yClicked, frame.getHeight()*3/5, frame.getHeight()*4/5)){ rowNum = 3;}
+		else if(between(yClicked, frame.getHeight()*4/5, frame.getHeight()*5/5)){ rowNum = 4;}
+		
+		//set appropriate release constants
+		releasedY = clickY;
+		releasedX = clickX;
+		releasedRow = rowNum;
+		releasedCol = colNum;
+		
+		return new int[]{rowNum, colNum};
 	}
 	
 
