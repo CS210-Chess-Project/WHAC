@@ -2,6 +2,7 @@ import java.awt.EventQueue;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
@@ -20,11 +21,15 @@ import java.util.ArrayList;
  *
  */
 public class ChessApp {
+	//arbitrary constants
+	private final boolean WHITE = true;
+	private final boolean BLACK = false;
 
 	//variables related to game type/state
 	private boolean singlePlayerGame;
 	private boolean easyMode;
 	private boolean playersMove = true; //true = player 1, false = player 2 or computer
+	private boolean playerColor = WHITE;
 	private boolean playerGoFirst = true;
 	private boolean gameOver = false;
 	
@@ -117,7 +122,7 @@ public class ChessApp {
 			public void actionPerformed(ActionEvent arg0) {
 				easyMode = true;
 				if(singlePlayerGame){
-					whoGoesFirst();;
+					decidePlayerColor();
 				}
 				else{ startTwoPlayerGame();	}
 			}
@@ -132,7 +137,7 @@ public class ChessApp {
 			public void actionPerformed(ActionEvent e) {
 				easyMode = false;
 				if(singlePlayerGame){
-					whoGoesFirst();
+					decidePlayerColor();
 				}
 				else{ startTwoPlayerGame();}
 			}
@@ -155,33 +160,79 @@ public class ChessApp {
 		frame.getContentPane().removeAll(); //clear the frame
 		frame.revalidate();
 		frame.repaint();
+		
+		//add label
+		JLabel title = new JLabel();
+		frame.getContentPane().add(title);
+		title.setFont(new Font("Arial Black", Font.PLAIN, 24));
+		title.setText("Who goes first?");
+		title.setBounds(frame.getWidth()/5, 35, frame.getWidth()*3/5, frame.getHeight()/12);
 
 		//replace buttons
-		JButton player1Button = new JButton();
-		player1Button.setFont(new Font("Arial Black", Font.PLAIN, 24));
-		player1Button.setText("Player");
-		player1Button.addActionListener(new ActionListener() {
+		JButton playerButton = new JButton();
+		playerButton.setFont(new Font("Arial Black", Font.PLAIN, 24));
+		playerButton.setText("Player");
+		playerButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				playerGoFirst = true;
 				playersMove = true;
 				startSinglePlayerGame();
 			}
 		});
-		frame.getContentPane().add(player1Button);
-		player1Button.setBounds(frame.getWidth()/4, frame.getHeight()/2 - frame.getHeight()/3, frame.getWidth()/2, frame.getHeight()/6);
+		frame.getContentPane().add(playerButton);
+		playerButton.setBounds(frame.getWidth()/4, frame.getHeight()/2 - frame.getHeight()/3, frame.getWidth()/2, frame.getHeight()/6);
 
-		JButton player2Button = new JButton();
-		player2Button.setFont(new Font("Arial Black", Font.PLAIN, 24));
-		player2Button.setText("Computer");
-		player2Button.addActionListener(new ActionListener() {
+		JButton compButton = new JButton();
+		compButton.setFont(new Font("Arial Black", Font.PLAIN, 24));
+		compButton.setText("Computer");
+		compButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				playerGoFirst = false;
 				playersMove = false;
 				startSinglePlayerGame();
 			}
 		});
-		frame.getContentPane().add(player2Button);
-		player2Button.setBounds(frame.getWidth()/4, frame.getHeight()/2 + frame.getHeight()/10, frame.getWidth()/2, frame.getHeight()/6);
+		frame.getContentPane().add(compButton);
+		compButton.setBounds(frame.getWidth()/4, frame.getHeight()/2 + frame.getHeight()/10, frame.getWidth()/2, frame.getHeight()/6);
+	}
+	
+	private void decidePlayerColor(){
+		//clear the frame
+		frame.getContentPane().removeAll(); //clear the frame
+		frame.revalidate();
+		frame.repaint();
+		
+		//add label
+		JLabel title = new JLabel();
+		frame.getContentPane().add(title);
+		title.setFont(new Font("Arial Black", Font.PLAIN, 24));
+		title.setText("Choose the player's color:");
+		title.setBounds(frame.getWidth()/5, 35, frame.getWidth()*3/5, frame.getHeight()/12);
+
+		//replace buttons
+		JButton whiteButton = new JButton();
+		whiteButton.setFont(new Font("Arial Black", Font.PLAIN, 24));
+		whiteButton.setText("White Pieces");
+		whiteButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				playerColor = WHITE;
+				whoGoesFirst();
+			}
+		});
+		frame.getContentPane().add(whiteButton);
+		whiteButton.setBounds(frame.getWidth()/4, frame.getHeight()/2 - frame.getHeight()/3, frame.getWidth()/2, frame.getHeight()/6);
+
+		JButton blackButton = new JButton();
+		blackButton.setFont(new Font("Arial Black", Font.PLAIN, 24));
+		blackButton.setText("Black Pieces");
+		blackButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				playerColor = BLACK;
+				whoGoesFirst();
+			}
+		});
+		frame.getContentPane().add(blackButton);
+		blackButton.setBounds(frame.getWidth()/4, frame.getHeight()/2 + frame.getHeight()/10, frame.getWidth()/2, frame.getHeight()/6);
 	}
 
 	private void startTwoPlayerGame(){
@@ -229,13 +280,11 @@ public class ChessApp {
 //				else{
 //					graphicalBoard.setHighlightedMoves(nonCaptureMoves);
 //				}
-				// TODO Auto-generated method stub
 				
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
-				// TODO Auto-generated method stub
 				getLocationReleased(arg0.getX(), arg0.getY(), bd.getBoard()); //sets constants releasedCol and releasedRow
 				if (releasedCol == pressedCol && releasedRow == pressedRow){
 					//do nothing.  attempted move to same spot
