@@ -15,12 +15,12 @@ public class EmptySpace extends Piece {
 
 	@Override
 	protected void generateAvailableMoves() {
-		this.availableMoves = new ArrayList<int[]>(0); //returns empty list (size 0)
+		this.availableMoves = new ArrayList<Move>(0); //returns empty list (size 0)
 	}
 
 	@Override
 	protected void generateCaptureMoves() {
-		this.captureMoves = new ArrayList<int[]>(0); //returns empty list (size 0)
+		this.captureMoves = new ArrayList<Move>(0); //returns empty list (size 0)
 	}
 
 	@Override

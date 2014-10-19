@@ -11,9 +11,9 @@ import java.util.ArrayList;
  */
 public abstract class Piece {
 	private int[] location; //the 2D location of the piece on the board.
-	protected ArrayList<int[]> availableMoves;
-	protected ArrayList<int[]> captureMoves;
-	protected boolean alignment;  //this will let us know if the piece is controlled by us or the enemy;  True = our piece; false = enemy piece
+	protected ArrayList<Move> availableMoves;
+	protected ArrayList<Move> captureMoves;
+	protected boolean alignment;  //True = WHITE; false=BLACK
 	protected BufferedImage image; //image to render when piece is drawn
 	
 	public Piece(int[] location){
@@ -34,12 +34,12 @@ public abstract class Piece {
 	
 	
 	//generates list of available moves and returns the list.  We generate each time to make sure we get an up-to-date list
-	public ArrayList<int[]> getAvailableMoves(){
+	public ArrayList<Move> getAvailableMoves(){
 		this.generateAvailableMoves();
 		return availableMoves;
 	}	
 	
-	public ArrayList<int[]> getCaptureMoves(){
+	public ArrayList<Move> getCaptureMoves(){
 		this.generateCaptureMoves();
 		return captureMoves;
 	}
