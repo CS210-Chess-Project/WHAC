@@ -15,8 +15,8 @@ public class Bishop extends Piece {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Bishop(int[] location, boolean alignment) {
-		super(location, alignment);
+	public Bishop(int[] location, boolean alignment, Board parentBoard) {
+		super(location, alignment, parentBoard);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -25,12 +25,6 @@ public class Bishop extends Piece {
 		// TODO Auto-generated method stub
 
 	}
-
-	@Override
-	protected void generateCaptureMoves() {
-		// TODO Auto-generated method stub
-		
-	}	
 
 	@Override
 	protected void loadImage() {

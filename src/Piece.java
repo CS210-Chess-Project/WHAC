@@ -10,26 +10,23 @@ import java.util.ArrayList;
  *
  */
 public abstract class Piece {
-	private int[] location; //the 2D location of the piece on the board.
-	protected ArrayList<Move> availableMoves;
-	protected ArrayList<Move> captureMoves;
+	protected int[] location; //the 2D location of the piece on the board.
+	protected ArrayList<Move> availableMoves = new ArrayList<Move>();
+	//protected ArrayList<Move> captureMoves= new ArrayList<Move>(); decided against this
 	protected boolean alignment;  //True = WHITE; false=BLACK
 	protected BufferedImage image; //image to render when piece is drawn
+	protected Board parentBoard;
 	
 	public Piece(int[] location){
 		this.location = location;
-		generateAvailableMoves();
-		generateCaptureMoves();
 		loadImage();
 	}
 	
-	public Piece(int[] location, boolean alignment){
+	public Piece(int[] location, boolean alignment, Board parentBd){
 		this.location = location;
-		generateAvailableMoves();
-		generateCaptureMoves();
 		this.alignment = alignment;
-		loadImage();
-		
+		this.parentBoard = parentBd;
+		loadImage();		
 	}
 	
 	
@@ -37,25 +34,14 @@ public abstract class Piece {
 	public ArrayList<Move> getAvailableMoves(){
 		this.generateAvailableMoves();
 		return availableMoves;
-	}	
-	
-	public ArrayList<Move> getCaptureMoves(){
-		this.generateCaptureMoves();
-		return captureMoves;
 	}
 
 	/**
 	 * This method is implemented in subclasses and should always cause the field availableMoves to be instantiated
+	 * Remember not to ignore non-capture moves if capture moves are available
 	 * It will be called anytime the list of available moves needs to be updated or retrieved
 	 */
 	protected abstract void generateAvailableMoves();
-	
-	
-	/**
-	 * This method is also implemented in subclasses and generates a list of available capture moves
-	 * It should also be called anytime the list of capture moves needs to be updated or retrieved
-	 */
-	protected abstract void generateCaptureMoves();
 	
 	/**
 	 * Painting instructions for the GUI;  Paints onto the G2D context g

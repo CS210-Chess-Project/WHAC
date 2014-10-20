@@ -19,11 +19,6 @@ public class EmptySpace extends Piece {
 	}
 
 	@Override
-	protected void generateCaptureMoves() {
-		this.captureMoves = new ArrayList<Move>(0); //returns empty list (size 0)
-	}
-
-	@Override
 	protected void paintSelf(int width, int height, Graphics2D g) {
 		//do nothing
 	}

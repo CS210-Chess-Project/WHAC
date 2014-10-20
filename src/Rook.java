@@ -15,8 +15,8 @@ public class Rook extends Piece {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Rook(int[] location, boolean alignment) {
-		super(location, alignment);
+	public Rook(int[] location, boolean alignment, Board parent) {
+		super(location, alignment, parent);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -24,12 +24,6 @@ public class Rook extends Piece {
 	protected void generateAvailableMoves() {
 		// TODO Auto-generated method stub
 
-	}
-
-	@Override
-	protected void generateCaptureMoves() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

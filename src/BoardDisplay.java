@@ -14,7 +14,7 @@ import javax.swing.JPanel;
  */
 public class BoardDisplay extends JPanel {
 	private Board board;
-	private ArrayList<int[]> highlightedMoves = new ArrayList<int[]>();
+	private ArrayList<Move> highlightedMoves = new ArrayList<Move>();
 
 	public BoardDisplay(Board b){
 		this.board = b;
@@ -61,10 +61,10 @@ public class BoardDisplay extends JPanel {
 		}
 		
 		//paint highlighted cells if there are any
-		myG.setColor(Color.GREEN);
-		for(int[] move:highlightedMoves){
+		myG.setColor(new Color(0,255,0,125));
+		for(Move move:highlightedMoves){
 			
-			Rectangle2D.Double thisBGCell = new Rectangle2D.Double(move[1]*xSpacing,move[0]*ySpacing, xSpacing, ySpacing);
+			Rectangle2D.Double thisBGCell = new Rectangle2D.Double(move.getCol()*xSpacing,move.getRow()*ySpacing, xSpacing, ySpacing);
 			myG.fill(thisBGCell);
 		}
 	}
@@ -73,8 +73,12 @@ public class BoardDisplay extends JPanel {
 		return this.board;
 
 	}
-
-	public void setHighlightedMoves(ArrayList<int[]> moves){
+	
+	public ArrayList<Move> getHighlightedMoves(){
+		return this.highlightedMoves;
+	}
+	
+	public void setHighlightedMoves(ArrayList<Move> moves){
 		this.highlightedMoves  = moves;
 	}
 }

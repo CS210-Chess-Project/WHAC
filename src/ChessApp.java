@@ -32,7 +32,7 @@ public class ChessApp {
 	private boolean playerColor = WHITE;
 	private boolean playerGoFirst = true;
 	private boolean gameOver = false;
-	
+
 	//variabled related to click events:
 	private int pressedX;
 	private int pressedY;
@@ -42,7 +42,10 @@ public class ChessApp {
 	private int releasedCol;
 	private int releasedX;
 	private int releasedY;
-	
+
+
+	Piece selectedPiece;
+
 	//variabled for global graphical components
 	private BoardDisplay graphicalBoard;
 
@@ -111,7 +114,7 @@ public class ChessApp {
 
 	private void easyOrAdvanced(){
 		//clear the frame
-		frame.getContentPane().removeAll(); //clear the frame
+		frame.getContentPane().removeAll();
 		frame.revalidate();
 		frame.repaint();
 
@@ -160,7 +163,7 @@ public class ChessApp {
 		frame.getContentPane().removeAll(); //clear the frame
 		frame.revalidate();
 		frame.repaint();
-		
+
 		//add label
 		JLabel title = new JLabel();
 		frame.getContentPane().add(title);
@@ -195,13 +198,13 @@ public class ChessApp {
 		frame.getContentPane().add(compButton);
 		compButton.setBounds(frame.getWidth()/4, frame.getHeight()/2 + frame.getHeight()/10, frame.getWidth()/2, frame.getHeight()/6);
 	}
-	
+
 	private void decidePlayerColor(){
 		//clear the frame
 		frame.getContentPane().removeAll(); //clear the frame
 		frame.revalidate();
 		frame.repaint();
-		
+
 		//add label
 		JLabel title = new JLabel();
 		frame.getContentPane().add(title);
@@ -243,20 +246,18 @@ public class ChessApp {
 		//set relevant constants
 		singlePlayerGame = false;
 		//create board and wire up listeners
-		Board board = new Board(true, easyMode);
+		Board board = new Board(easyMode);
 		this.graphicalBoard = new BoardDisplay(frame.getContentPane().getWidth(), frame.getContentPane().getHeight(), board);
 		frame.getContentPane().add(graphicalBoard);
-		
+
 		//wire stuff up:
 		wireUpMouseListener(graphicalBoard);
 	}
-	
+
 	private void wireUpMouseListener(BoardDisplay bd){
 		System.out.println("Wiring up stuff");
 		bd.addMouseListener(new MouseListener(){
-			
-			Piece selectedPiece;
-			
+
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				// do nothing
@@ -267,41 +268,58 @@ public class ChessApp {
 			public void mouseExited(MouseEvent arg0) {
 				//do nothing
 			}
-			
+
 			//click down event.  Get and highlight available moves.
 			public void mousePressed(MouseEvent arg0) {
-				
+
 				selectedPiece = getPieceClicked(arg0.getX(), arg0.getY(), bd.getBoard());
-//				ArrayList<int[]> captureMoves = selectedPiece.getCaptureMoves();
-//				ArrayList<int[]> nonCaptureMoves = selectedPiece.getAvailableMoves();
-//				if (captureMoves.size()>0){
-//					graphicalBoard.setHighlightedMoves(captureMoves);
-//				}
-//				else{
-//					graphicalBoard.setHighlightedMoves(nonCaptureMoves);
-//				}
-				
+				boolean legalCondition1 = (playersMove && playerColor==selectedPiece.alignment );
+				boolean legalCondition2 = (!playersMove && playerColor!=selectedPiece.alignment);
+				if (legalCondition1 || legalCondition2 ){
+					//highlight legal moves
+					bd.setHighlightedMoves(selectedPiece.getAvailableMoves());
+					frame.repaint();
+				}
+				else{
+					selectedPiece = null;
+				}
+
 			}
 
 			@Override
-			public void mouseReleased(MouseEvent arg0) {
-				getLocationReleased(arg0.getX(), arg0.getY(), bd.getBoard()); //sets constants releasedCol and releasedRow
-				if (releasedCol == pressedCol && releasedRow == pressedRow){
-					//do nothing.  attempted move to same spot
-				}
-				else{
-					//selectedPiece //= bd.getBoard().getBoardArray()[pressedRow][pressedCol];
-					bd.getBoard().makeMove(selectedPiece, releasedRow, releasedCol);
-					bd.repaint();
-					
-					playersMove = !playersMove; //make it the other persons move
+			public void mouseReleased(MouseEvent arg0) {	
+				if (selectedPiece!= null){
+					getLocationReleased(arg0.getX(), arg0.getY(), bd.getBoard()); //sets constants releasedCol and releasedRow
+					if (releasedCol == pressedCol && releasedRow == pressedRow){
+						//do nothing.  attempted move to same spot
+					}
+					else{
+						//prevent illegal moves:
+						boolean moveLegal = false;
+						for (Move m:selectedPiece.getAvailableMoves()){
+							System.out.println("checking move");
+							if (m.getRow() == releasedRow && m.getCol() == releasedCol){
+								moveLegal = true;
+							}
+						}
+						if (moveLegal){
+							bd.getBoard().makeMove(new Move(selectedPiece, releasedRow, releasedCol));
+							bd.repaint();
+
+							playersMove = !playersMove; //make it the other persons move
+						}
+					}
+
+					//always un-highlight moves
+					bd.getHighlightedMoves().clear();
+					frame.repaint();
 				}
 			}
-			
-			
+
+
 		});
 	}
-	
+
 	private Piece getPieceClicked(int clickX, int clickY, Board bd){
 		int xClicked = clickX;
 		int yClicked = clickY;
@@ -319,18 +337,18 @@ public class ChessApp {
 		else if(between(yClicked, frame.getHeight()*2/5, frame.getHeight()*3/5)){ rowNum = 2;}
 		else if(between(yClicked, frame.getHeight()*3/5, frame.getHeight()*4/5)){ rowNum = 3;}
 		else if(between(yClicked, frame.getHeight()*4/5, frame.getHeight()*5/5)){ rowNum = 4;}
-		
-		
+
+
 		//set corresponding constants
 		pressedRow = rowNum;
 		pressedCol = colNum;
 		pressedX = clickX;
 		pressedY = clickY;
-		
+
 		//grab the corresponding piece from board:
 		return bd.getBoardArray()[rowNum][colNum];
 	}
-	
+
 	private int[] getLocationReleased(int clickX, int clickY, Board bd){
 		//translates the x,y coords of a mouse released event into using row, col numbers
 		int xClicked = clickX;
@@ -349,16 +367,16 @@ public class ChessApp {
 		else if(between(yClicked, frame.getHeight()*2/5, frame.getHeight()*3/5)){ rowNum = 2;}
 		else if(between(yClicked, frame.getHeight()*3/5, frame.getHeight()*4/5)){ rowNum = 3;}
 		else if(between(yClicked, frame.getHeight()*4/5, frame.getHeight()*5/5)){ rowNum = 4;}
-		
+
 		//set appropriate release constants
 		releasedY = clickY;
 		releasedX = clickX;
 		releasedRow = rowNum;
 		releasedCol = colNum;
-		
+
 		return new int[]{rowNum, colNum};
 	}
-	
+
 
 	private boolean between(int num, int lower, int higher){
 		return (lower < num && higher > num);

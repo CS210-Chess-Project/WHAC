@@ -18,8 +18,7 @@ public class Move {
 	 */
 	public Move(Piece p, int row, int col){
 		this.row = row; this.col = col;
-		this.targetPiece = p;
-		
+		this.targetPiece = p;		
 	}
 	
 	/**
