@@ -33,36 +33,40 @@ public class Pawn extends Piece {
 		//white pieces:
 		if (this.alignment == Board.WHITE){
 			int newRow = this.location[0] - 1;
-			if (potentialCol1 >= 0){ //check left diagonal capture
-				Piece leftDiagPiece = parentBoard.getPieceAt(newRow, potentialCol1);
-				if (leftDiagPiece.alignment == Board.BLACK && !(leftDiagPiece instanceof EmptySpace)){ //white pieces can only capture black pieces
-					availableMoves.add(new Move(this, newRow, potentialCol1));
-					captureMovesFound = true;
+			if (newRow >= 0 && newRow < 5){
+				if (potentialCol1 >= 0){ //check left diagonal capture
+					Piece leftDiagPiece = parentBoard.getPieceAt(newRow, potentialCol1);
+					if (leftDiagPiece.alignment == Board.BLACK && !(leftDiagPiece instanceof EmptySpace)){ //white pieces can only capture black pieces
+						availableMoves.add(new Move(this, newRow, potentialCol1, parentBoard));
+						captureMovesFound = true;
+					}
 				}
-			}
-			if (potentialCol2 < 5){ //check right diagonal capture
-				Piece rightDiagPiece = parentBoard.getPieceAt(newRow, potentialCol2);
-				if (rightDiagPiece.alignment == Board.BLACK && !(rightDiagPiece instanceof EmptySpace)){ //white pieces can only capture black pieces
-					availableMoves.add(new Move(this, newRow, potentialCol2));
-					captureMovesFound = true;
+				if (potentialCol2 < 5){ //check right diagonal capture
+					Piece rightDiagPiece = parentBoard.getPieceAt(newRow, potentialCol2);
+					if (rightDiagPiece.alignment == Board.BLACK && !(rightDiagPiece instanceof EmptySpace)){ //white pieces can only capture black pieces
+						availableMoves.add(new Move(this, newRow, potentialCol2, parentBoard));
+						captureMovesFound = true;
+					}
 				}
 			}
 		}
 		//black pieces:
 		else{
 			int newRow = this.location[0] + 1;
-			if (potentialCol1 >= 0){ //check left diagonal capture
-				Piece leftDiagPiece = parentBoard.getPieceAt(newRow, potentialCol1);
-				if (leftDiagPiece.alignment == Board.WHITE && !(leftDiagPiece instanceof EmptySpace)){
-					availableMoves.add(new Move(this, newRow, potentialCol1));
-					captureMovesFound = true;
+			if (newRow >= 0 && newRow < 5){
+				if (potentialCol1 >= 0){ //check left diagonal capture
+					Piece leftDiagPiece = parentBoard.getPieceAt(newRow, potentialCol1);
+					if (leftDiagPiece.alignment == Board.WHITE && !(leftDiagPiece instanceof EmptySpace)){
+						availableMoves.add(new Move(this, newRow, potentialCol1, parentBoard));
+						captureMovesFound = true;
+					}
 				}
-			}
-			if (potentialCol2 < 5){ //check right diagonal capture
-				Piece rightDiagPiece = parentBoard.getPieceAt(newRow, potentialCol2);
-				if (rightDiagPiece.alignment == Board.WHITE && !(rightDiagPiece instanceof EmptySpace)){
-					availableMoves.add(new Move(this, newRow, potentialCol2));
-					captureMovesFound = true;
+				if (potentialCol2 < 5){ //check right diagonal capture
+					Piece rightDiagPiece = parentBoard.getPieceAt(newRow, potentialCol2);
+					if (rightDiagPiece.alignment == Board.WHITE && !(rightDiagPiece instanceof EmptySpace)){
+						availableMoves.add(new Move(this, newRow, potentialCol2, parentBoard));
+						captureMovesFound = true;
+					}
 				}
 			}
 		}
@@ -70,21 +74,20 @@ public class Pawn extends Piece {
 		// check for other moves, if there are no capture moves
 		if (!captureMovesFound){
 			int currentCol = location[1];
-			Piece checkHere = this;
 			if (this.alignment == Board.WHITE){ //if its white then it can move one direction up the board if the space is clear
 				int newRow = this.location[0] -1;
 				if (newRow >= 0){
 					if (parentBoard.getBoardArray()[newRow][currentCol] instanceof EmptySpace){
-						availableMoves.add(new Move(this, newRow, currentCol));
+						availableMoves.add(new Move(this, newRow, currentCol, parentBoard));
 					}
 				}
 			}
 			else{ //if it's black then it can move one direction down the board if the space is clear
 				int newRow = this.location[0] + 1;
 				if(newRow < 5){
-					
+
 					if (parentBoard.getBoardArray()[newRow][currentCol] instanceof EmptySpace){
-						availableMoves.add(new Move(this, newRow, currentCol));
+						availableMoves.add(new Move(this, newRow, currentCol, parentBoard));
 					}
 				}
 			}

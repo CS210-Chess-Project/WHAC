@@ -12,6 +12,7 @@ import javax.swing.JPanel;
  * @author Zach
  *
  */
+@SuppressWarnings("serial")
 public class BoardDisplay extends JPanel {
 	private Board board;
 	private ArrayList<Move> highlightedMoves = new ArrayList<Move>();

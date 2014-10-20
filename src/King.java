@@ -23,7 +23,7 @@ public class King extends Piece {
 	@Override
 	protected void generateAvailableMoves() {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override

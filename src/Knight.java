@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -12,23 +13,117 @@ public class Knight extends Piece {
 
 	public Knight(int[] location) {
 		super(location);
-		// TODO Auto-generated constructor stub
 	}
 
 	public Knight(int[] location, boolean alignment, Board parent) {
 		super(location, alignment, parent);
-		// TODO Auto-generated constructor stub
 	}
 
-	@Override
+	/**
+	 * This is pretty long, ugly, and brute-forcy but I couldn't think of a better way to check knight moves
+	 */
 	protected void generateAvailableMoves() {
-		// TODO Auto-generated method stub
+		ArrayList<Move> captureMoves = new ArrayList<Move>();
+		ArrayList<Move> otherMoves = new ArrayList<Move>();
+
+		int proposedCol1 = location[1] - 1;
+		int proposedCol2 = location[1] + 1;		
+
+		//check two-up, one over moves:
+		int proposedRow = location[0] - 2;
+		if (proposedRow >= 0 && proposedRow <5){//bounds checking
+			if (proposedCol1 >= 0 && proposedCol1 <5){ //bounds checking
+				if (parentBoard.getBoardArray()[proposedRow][proposedCol1] instanceof EmptySpace){ //can move to empty spaces
+					otherMoves.add(new Move(this, proposedRow, proposedCol1, parentBoard));
+				}
+				else if(parentBoard.getBoardArray()[proposedRow][proposedCol1].alignment == !this.alignment){ //can also capture opposite pieces
+					captureMoves.add(new Move(this, proposedRow, proposedCol1, parentBoard));
+				}
+			}
+			if (proposedCol2 >= 0 && proposedCol2 <5){ //bounds checking
+				if (parentBoard.getBoardArray()[proposedRow][proposedCol2] instanceof EmptySpace){ //can move to empty spaces
+					otherMoves.add(new Move(this, proposedRow, proposedCol2, parentBoard));
+				}
+				else if(parentBoard.getBoardArray()[proposedRow][proposedCol2].alignment == !this.alignment){ //can also capture opposite pieces
+					captureMoves.add(new Move(this, proposedRow, proposedCol2, parentBoard));
+				}
+			}
+		}
+		//check two down, one over
+		proposedRow = location[0] + 2;
+		if (proposedRow >= 0 && proposedRow <5){//bounds checking
+			if (proposedCol1 >= 0 && proposedCol1 <5){ //bounds checking
+				if (parentBoard.getBoardArray()[proposedRow][proposedCol1] instanceof EmptySpace){ //can move to empty spaces
+					otherMoves.add(new Move(this, proposedRow, proposedCol1, parentBoard));
+				}
+				else if(parentBoard.getBoardArray()[proposedRow][proposedCol1].alignment == !this.alignment){ //can also capture opposite pieces
+					captureMoves.add(new Move(this, proposedRow, proposedCol1, parentBoard));
+				}
+			}
+			if (proposedCol2 >= 0 && proposedCol2 <5){ //bounds checking
+				if (parentBoard.getBoardArray()[proposedRow][proposedCol2] instanceof EmptySpace){ //can move to empty spaces
+					otherMoves.add(new Move(this, proposedRow, proposedCol2, parentBoard));
+				}
+				else if(parentBoard.getBoardArray()[proposedRow][proposedCol2].alignment == !this.alignment){ //can also capture opposite pieces
+					captureMoves.add(new Move(this, proposedRow, proposedCol2, parentBoard));
+				}
+			}
+		}
+		
+		
+		proposedCol1 = location[1] + 2;
+		proposedCol2 = location[1] - 2;
+		//check one up, two over
+		proposedRow = location[0] - 1;
+		if (proposedRow >= 0 && proposedRow <5){//bounds checking
+			if (proposedCol1 >= 0 && proposedCol1 <5){ //bounds checking
+				if (parentBoard.getBoardArray()[proposedRow][proposedCol1] instanceof EmptySpace){ //can move to empty spaces
+					otherMoves.add(new Move(this, proposedRow, proposedCol1, parentBoard));
+				}
+				else if(parentBoard.getBoardArray()[proposedRow][proposedCol1].alignment == !this.alignment){ //can also capture opposite pieces
+					captureMoves.add(new Move(this, proposedRow, proposedCol1, parentBoard));
+				}
+			}
+			if (proposedCol2 >= 0 && proposedCol2 <5){ //bounds checking
+				if (parentBoard.getBoardArray()[proposedRow][proposedCol2] instanceof EmptySpace){ //can move to empty spaces
+					otherMoves.add(new Move(this, proposedRow, proposedCol2, parentBoard));
+				}
+				else if(parentBoard.getBoardArray()[proposedRow][proposedCol2].alignment == !this.alignment){ //can also capture opposite pieces
+					captureMoves.add(new Move(this, proposedRow, proposedCol2, parentBoard));
+				}
+			}
+		}
+		
+		//check one down, two over
+		proposedRow = location[0] + 1;
+		if (proposedRow >= 0 && proposedRow <5){//bounds checking
+			if (proposedCol1 >= 0 && proposedCol1 <5){ //bounds checking
+				if (parentBoard.getBoardArray()[proposedRow][proposedCol1] instanceof EmptySpace){ //can move to empty spaces
+					otherMoves.add(new Move(this, proposedRow, proposedCol1, parentBoard));
+				}
+				else if(parentBoard.getBoardArray()[proposedRow][proposedCol1].alignment == !this.alignment){ //can also capture opposite pieces
+					captureMoves.add(new Move(this, proposedRow, proposedCol1, parentBoard));
+				}
+			}
+			if (proposedCol2 >= 0 && proposedCol2 <5){ //bounds checking
+				if (parentBoard.getBoardArray()[proposedRow][proposedCol2] instanceof EmptySpace){ //can move to empty spaces
+					otherMoves.add(new Move(this, proposedRow, proposedCol2, parentBoard));
+				}
+				else if(parentBoard.getBoardArray()[proposedRow][proposedCol2].alignment == !this.alignment){ //can also capture opposite pieces
+					captureMoves.add(new Move(this, proposedRow, proposedCol2, parentBoard));
+				}
+			}
+		}
+		
+		if (captureMoves.isEmpty()){
+			this.availableMoves = otherMoves;
+		}
+		else this.availableMoves = captureMoves;
 
 	}
 
 	@Override
 	protected void loadImage() {
-		// TODO Auto-generated method stub
 		try {
 			if (this.alignment){ //i.e. if white piece then
 				this.image = ImageIO.read(new File("resources" + File.separator + "white-knight.png"));

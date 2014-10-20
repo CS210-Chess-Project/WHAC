@@ -1,17 +1,13 @@
 import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.Font;
-import java.util.ArrayList;
 
 /**
  * Handles all the fiddly graphical stuff and ties everything together.
@@ -297,16 +293,27 @@ public class ChessApp {
 						//prevent illegal moves:
 						boolean moveLegal = false;
 						for (Move m:selectedPiece.getAvailableMoves()){
-							System.out.println("checking move");
-							if (m.getRow() == releasedRow && m.getCol() == releasedCol){
-								moveLegal = true;
+							if (m.getRow() == releasedRow && m.getCol() == releasedCol){ // is the proposed move a member of available moves?
+								//is the proposed move a capture move? then it is always legal
+								if (m.isCaptureMove()){
+									moveLegal = true;
+								}
+								// is it not a capture move? then it is only legal if there are no other capture moves on the board for this color
+								else{
+									if (!bd.getBoard().captureMovesAvailable(currentPlayersColor())){
+										moveLegal = true;
+									}
+								}
 							}
 						}
 						if (moveLegal){
-							bd.getBoard().makeMove(new Move(selectedPiece, releasedRow, releasedCol));
+							bd.getBoard().makeMove(new Move(selectedPiece, releasedRow, releasedCol, bd.getBoard()));
 							bd.repaint();
 
 							playersMove = !playersMove; //make it the other persons move
+						}
+						else{
+							//TODO: notify the user that this move isn't legal
 						}
 					}
 
@@ -380,6 +387,15 @@ public class ChessApp {
 
 	private boolean between(int num, int lower, int higher){
 		return (lower < num && higher > num);
+	}
+	
+	private boolean currentPlayersColor(){
+		if (playersMove){
+			return playerColor;
+		}
+		else{
+			return !playerColor;
+		}
 	}
 
 }

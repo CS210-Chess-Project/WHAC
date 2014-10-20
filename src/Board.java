@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class Board {
 	public static final boolean BLACK =false;
 	public static final boolean WHITE = true;
-	
+
 	public Piece[][] boardArray;
 	private double score;  // the minimax score for this board.  Computed and returned by evaluateSelf()
 
@@ -28,11 +28,11 @@ public class Board {
 			boardArray[1][x] = new Pawn(locationBlack, Board.BLACK, this); //black pawns
 			int[] locationWhite = {3,x};
 			boardArray[3][x] = new Pawn(locationWhite, Board.WHITE, this); //white pawns
-			
+
 			//empty spaces:
 			boardArray[2][x] = new EmptySpace(new int[]{x,2});
 		}
-		
+
 		//setup white - white pieces are the same in both easy and advanced mode
 		//white pieces:
 		boardArray[4][0] = new Rook(new int[]{4,0}, WHITE, this);
@@ -40,7 +40,7 @@ public class Board {
 		boardArray[4][2] = new Bishop(new int[]{4,2}, WHITE, this);
 		boardArray[4][3] = new Queen(new int[]{4,3}, WHITE, this);
 		boardArray[4][4] = new King(new int[]{4,4}, WHITE, this);
-		
+
 		//easy mode does NOT have the pieces mirrored
 		if (isEasyMode){
 			//black pieces:
@@ -64,25 +64,54 @@ public class Board {
 		this.boardArray = boardState;
 	}
 
+	public boolean isStalemate(){
+		//TODO: check for stalemate conditions
+		return false;
+	}
+
+	//By nature, this isn't a terribly efficient method.  Try not to use it for anything performance-sensitive
+	/**
+	 * Checks if the current board has a capture move available for the selected Color
+	 * @param targetAlignment the color (true = White, false = Black) of the color to search
+	 * @return
+	 */
+	public boolean captureMovesAvailable(boolean targetAlignment){
+		//add all available moves for every piece on the board
+		for (int col = 0; col < this.boardArray[0].length; col++){
+			for(int row = 0; row < this.boardArray.length; row++){
+				Piece currentPiece = boardArray[row][col];
+				if (currentPiece.alignment == targetAlignment){
+					for(Move m : this.boardArray[row][col].getAvailableMoves()){
+						if (m.isCaptureMove()){
+							return true;
+						}
+					}
+				}
+			}
+		}		
+
+		return false;
+	}
+
 	//moves a piece to a specified row and column
 	//really more of a helper method for makeMove that takes a move object
 	public void makeMove(Piece p, int row, int col){
 		int[] location = p.getLocation(); //get current location
 		this.boardArray[location[0]][location[1]] = new EmptySpace(location);
 		p.setLocation(new int[]{row, col});
-		
+
 		boardArray[row][col] = p;
 	}
-	
+
 	//nicer, more cleanly packaged makeMove method that uses the Move class
 	public void makeMove(Move m){
 		this.makeMove(m.getTargetPiece(), m.getRow(), m.getCol());
 	}
 
-	
+
 	//  ---------------------------MINIMAX search related methods ----------------------------------
 	// I just kinda threw together framework for how I thought these might work.  If you need to modify them, feel free.
-		
+
 	public Move getNextMove(int lookAheadNumber){
 		//TODO: This is where most of the work will be done.  We will do a minimax search for the best moves, looking ahead the specified number of turns
 		//A Board state that represents our best move will be returned
@@ -99,9 +128,9 @@ public class Board {
 		this.score = 0;
 		return this.score;
 	}
-	
+
 	// ------------------------- End Minimax related methods --------------------------------
-	
+
 	//Testing methods:
 	public String toString(){
 		String returned = "";
@@ -123,11 +152,11 @@ public class Board {
 	public void setBoardArray(Piece[][] boardArray) {
 		this.boardArray = boardArray;
 	}
-	
+
 	public Piece getPieceAt(int row, int col){
 		return boardArray[row][col];
 	}
-	
+
 	//test method
 	/*public static void main(String[] args){
 		Board board = new Board(true, false);

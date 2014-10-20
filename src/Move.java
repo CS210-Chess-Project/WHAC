@@ -8,7 +8,7 @@ public class Move {
 	private int row;
 	private int col;
 	private Piece targetPiece;
-	private Board resultBoard;
+	private Board parent;
 	
 	/**
 	 * Constructor with the basic parameters
@@ -16,22 +16,29 @@ public class Move {
 	 * @param row the row where the piece will be moved
 	 * @param col the column where the piece will be moved
 	 */
+	/* deprecated constructor
 	public Move(Piece p, int row, int col){
 		this.row = row; this.col = col;
 		this.targetPiece = p;		
-	}
+	}*/
 	
 	/**
-	 * Contructor that will also create the resulting board state
+	 * Contructor that will also set the parent board
 	 * @param p the target piece
 	 * @param row the row where the piece will be moved
 	 * @param col the column where the piece will be moved
 	 */
-	public Move(Piece p, int row, int col, Board boardBeforeMove){
+	public Move(Piece p, int row, int col, Board parent){
 		this.row = row; this.col = col;
 		this.targetPiece = p;
-		boardBeforeMove.makeMove(p, row, col);
-		this.resultBoard = boardBeforeMove;
+		this.parent = parent;
+	}
+	
+	public boolean isCaptureMove(){
+		if (parent.getBoardArray()[row][col] instanceof EmptySpace){
+			return false;
+		}
+		return true;
 	}
 
 	//Getters/Setters
@@ -50,10 +57,6 @@ public class Move {
 
 	public void setTargetPiece(Piece targetPiece) {
 		this.targetPiece = targetPiece;
-	}
-
-	public Board getResultBoard() {
-		return resultBoard;
 	}
 	
 		
