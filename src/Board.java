@@ -124,8 +124,32 @@ public class Board {
 	}
 
 	public double evaluateSelf(){
-		//TODO : this method should using our heuristic to score the board, set the score field to that score, and return the score
-		this.score = 0;
+            double pieceMoves = 0;
+            double boardScore = 0;
+            double pieceLocationScore = 0;
+            double pieceTypeScore = 0;
+		for(int row = 0; row < 5; row++){
+                    for(int col = 0; col < 5; col++){
+                        if((row == 0 && col == 0)||(row == 0 && col == 4))
+                            pieceLocationScore = -4;
+                        else if((row == 4 && col == 0) || (row == 4 && col == 4))
+                            pieceLocationScore = 4;
+                        else if(row == 0 ||  col == 0)
+                            pieceLocationScore = -3;
+                        else if(row == 4 || col == 4)
+                            pieceLocationScore = 3;
+                        else if((row == 2 && (col != 0 || col != 4) || (col == 2 && (row != 0 || row != 4))))
+                            pieceLocationScore = -5;
+                        else
+                            pieceLocationScore = 1;
+                        ArrayList<Move> allMovesForPiece = boardArray[row][col].getAvailableMoves();
+                        pieceMoves = allMovesForPiece.size() + pieceMoves;
+                        pieceTypeScore = boardArray[row][col].getHeuristicScore() + pieceTypeScore;
+                    }
+                }
+                boardScore = pieceMoves + pieceLocationScore + pieceTypeScore;
+                //TODO : this method should using our heuristic to score the board, set the score field to that score, and return the score
+		this.score = boardScore;
 		return this.score;
 	}
 
@@ -159,9 +183,13 @@ public class Board {
 
 	//test method
 	/*public static void main(String[] args){
-		Board board = new Board(true, false);
+		Board board = new Board(true);
 		board.makeMove(board.getPieceAt(3,2), 1, 2);
 		System.out.println(board.toString());
-	}*/
+                System.out.println(board.evaluateSelf());
+                board.makeMove(board.getPieceAt(4,2),1,2);
+                System.out.println(board.evaluateSelf());
+        }
+	*/
 
 }
