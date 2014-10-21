@@ -41,5 +41,13 @@ public class King extends Piece {
 			image = null;
 		}
 	}
+	@Override
+        public int getHeuristicScore(){
+           if (this.alignment)
+               return 1;
+           else
+               return -1;
+        }
+
 
 }
