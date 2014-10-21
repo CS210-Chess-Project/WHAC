@@ -109,5 +109,12 @@ public class Pawn extends Piece {
 			image = null;
 		}
 	}
+	@Override
+        public int getHeuristicScore(){
+           if (this.alignment)
+               return 0;
+           else
+               return 0;
+        }
 
 }
