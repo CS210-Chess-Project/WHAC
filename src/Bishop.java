@@ -40,6 +40,14 @@ public class Bishop extends Piece {
 			System.out.println("Exception thrown");
 			image = null;
 		}
-	}
+        }
+        
+        @Override
+        public int getHeuristicScore(){
+           if (this.alignment)
+               return -2;
+           else
+               return 2;
+        }
 
 }
