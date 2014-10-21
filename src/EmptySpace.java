@@ -27,5 +27,10 @@ public class EmptySpace extends Piece {
 	protected void loadImage() {
 		//do nothing
 	}
+	@Override
+        public int getHeuristicScore(){
+            return 0;
+        }
+
 
 }
