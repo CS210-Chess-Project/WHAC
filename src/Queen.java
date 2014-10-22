@@ -41,5 +41,13 @@ public class Queen extends Piece {
 			image = null;
 		}
 	}
+	@Override
+        public int getHeuristicScore(){
+           if (this.alignment)
+               return -3;
+           else
+               return 3;
+        }
+
 
 }
