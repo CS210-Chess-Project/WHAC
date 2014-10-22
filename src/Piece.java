@@ -63,9 +63,34 @@ public abstract class Piece {
 		return location;
 	}
 	
-	public int getHeuristicScore(){
-            return score;
-        }
+	public abstract int getHeuristicScore(boolean playerColor);
+	
+	//location score is shared for any piece
+	protected int getLocationScore(boolean playerColor){
+		int locationScore = 0;
+    	//corners:
+    	if ((location[0] == 0 && location[1] == 0) || (location[0] == 4 && location[1]==4) || (location[0] == 0 && location[1]==4) || (location[0]==4 && location[1]==0)){
+    		locationScore = 2;
+    	}
+    	//edges
+    	else if(location[0] ==0 || location[1] == 0 || location[0]==4 || location[1]==4){
+    		locationScore = 1;
+    	}
+    	//inner edges:
+    	else if(location[0]==1 || location[1]==1 || location[0]==3 || location[1]==3){
+    		locationScore = -1;
+    	}
+    	else if(location[0]==2 && location[1]==2){
+    		locationScore = -2;
+    	}
+    	
+    	//if its an opponent piece we're talking about, then the location score should be reversed
+    	if (this.alignment != playerColor){
+    		locationScore = -locationScore;
+    	}
+    	
+    	return locationScore;
+	}
 
 
 	public void setLocation(int[] location) {

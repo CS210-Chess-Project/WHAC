@@ -110,11 +110,13 @@ public class Pawn extends Piece {
 		}
 	}
 	@Override
-        public int getHeuristicScore(){
-           if (this.alignment)
-               return 0;
-           else
-               return 0;
-        }
+	public int getHeuristicScore(boolean playerAlignment){
+		int pieceScore = 0;
+    	if (this.alignment != playerAlignment){
+    		pieceScore = -pieceScore;
+    	}
+       
+    	return pieceScore + getLocationScore(playerAlignment);
+	}
 
 }

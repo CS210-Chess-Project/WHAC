@@ -28,9 +28,9 @@ public class EmptySpace extends Piece {
 		//do nothing
 	}
 	@Override
-        public int getHeuristicScore(){
-            return 0;
-        }
+	public int getHeuristicScore(boolean irrelevant){
+		return 0;
+	}
 
 
 }

@@ -101,11 +101,33 @@ public class Board {
 		p.setLocation(new int[]{row, col});
 
 		boardArray[row][col] = p;
+		
+		endOfMoveProcessing();
 	}
 
 	//nicer, more cleanly packaged makeMove method that uses the Move class
 	public void makeMove(Move m){
-		this.makeMove(m.getTargetPiece(), m.getRow(), m.getCol());
+		this.makeMove(m.getTargetPiece(), m.getRow(), m.getCol());		
+	}
+	
+	/**
+	 * This method performs end of move tasks such as checking for pawns that need to be "kinged"
+	 * Later this might check for game over or stalemate states
+	 */
+	private void endOfMoveProcessing(){
+		//check for pawns that need kinging
+		for (int col = 0; col < 5; col++){
+			if (boardArray[0][col] instanceof Pawn){
+				boolean color = boardArray[0][col].alignment;
+				boardArray[0][col] = new King(new int[]{0, col}, color, this);
+				System.out.println("Found one");
+			}
+			if(boardArray[4][col] instanceof Pawn){
+				boolean color = boardArray[4][col].alignment;
+				boardArray[4][col] = new King(new int[]{4, col}, color, this);
+				System.out.println("Found one");
+			}
+		}
 	}
 
 
@@ -123,32 +145,34 @@ public class Board {
 		return null;
 	}
 
-	public double evaluateSelf(){
-            double pieceMoves = 0;
-            double boardScore = 0;
-            double pieceLocationScore = 0;
-            double pieceTypeScore = 0;
+	public double evaluateSelf(boolean playerColor){
+		double pieceMoves = 0;
+		double boardScore = 0;
+		//these should depend on who controls the piece.  It's bad if our piece is in the middle, but good if our opponent's is.  So I moved these to the individual classes
+		// I also combined the scoring for a piece into one method, so we can just sum up the scores of all the pieces
+		// This now gives a better indication of a good/bad board.  A completely neutral board will have a score of 0 (for example the starting board).
+		// The score will change based on how we move.  For example, moving our piece to the center of the board will cause the score to fall below 0
+		//this is demonstrated in the main method of this class
 		for(int row = 0; row < 5; row++){
-                    for(int col = 0; col < 5; col++){
-                        if((row == 0 && col == 0)||(row == 0 && col == 4))
-                            pieceLocationScore = -4;
-                        else if((row == 4 && col == 0) || (row == 4 && col == 4))
-                            pieceLocationScore = 4;
-                        else if(row == 0 ||  col == 0)
-                            pieceLocationScore = -3;
-                        else if(row == 4 || col == 4)
-                            pieceLocationScore = 3;
-                        else if((row == 2 && (col != 0 || col != 4) || (col == 2 && (row != 0 || row != 4))))
-                            pieceLocationScore = -5;
-                        else
-                            pieceLocationScore = 1;
-                        ArrayList<Move> allMovesForPiece = boardArray[row][col].getAvailableMoves();
-                        pieceMoves = allMovesForPiece.size() + pieceMoves;
-                        pieceTypeScore = boardArray[row][col].getHeuristicScore() + pieceTypeScore;
-                    }
-                }
-                boardScore = pieceMoves + pieceLocationScore + pieceTypeScore;
-                //TODO : this method should using our heuristic to score the board, set the score field to that score, and return the score
+			for(int col = 0; col < 5; col++){
+				/*if((row == 0 && col == 0)||(row == 0 && col == 4))
+					pieceLocationScore = -4;
+				else if((row == 4 && col == 0) || (row == 4 && col == 4))
+					pieceLocationScore = 4;
+				else if(row == 0 ||  col == 0)
+					pieceLocationScore = -3;
+				else if(row == 4 || col == 4)
+					pieceLocationScore = 3;
+				else if((row == 2 && (col != 0 || col != 4) || (col == 2 && (row != 0 || row != 4))))
+					pieceLocationScore = -5;
+				else
+					pieceLocationScore = 1;
+				ArrayList<Move> allMovesForPiece = boardArray[row][col].getAvailableMoves();
+				pieceMoves = allMovesForPiece.size() + pieceMoves;
+				pieceTypeScore = boardArray[row][col].getHeuristicScore() + pieceTypeScore;*/
+				boardScore += boardArray[row][col].getHeuristicScore(playerColor);
+			}
+		}
 		this.score = boardScore;
 		return this.score;
 	}
@@ -184,12 +208,13 @@ public class Board {
 	//test method
 	/*public static void main(String[] args){
 		Board board = new Board(true);
+		System.out.println(board.evaluateSelf(Board.WHITE));
 		board.makeMove(board.getPieceAt(3,2), 1, 2);
 		System.out.println(board.toString());
-                System.out.println(board.evaluateSelf());
-                board.makeMove(board.getPieceAt(4,2),1,2);
-                System.out.println(board.evaluateSelf());
-        }
-	*/
+		System.out.println(board.evaluateSelf(Board.WHITE));
+		board.makeMove(board.getPieceAt(4,2),1,2);
+		System.out.println(board.evaluateSelf(Board.WHITE));
+	}*/
+
 
 }

@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -12,18 +13,130 @@ public class King extends Piece {
 
 	public King(int[] location) {
 		super(location);
-		// TODO Auto-generated constructor stub
 	}
 
 	public King(int[] location, boolean alignment, Board parent) {
 		super(location, alignment, parent);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	protected void generateAvailableMoves() {
-		// TODO Auto-generated method stub
-		
+		ArrayList<Move> others = new ArrayList<Move>();
+		ArrayList<Move> captures = new ArrayList<Move>();
+
+		Piece[][] board = this.parentBoard.getBoardArray();
+		boolean captureFound = false;
+
+		//check up
+		int checkedRow = this.location[0] - 1;
+		int checkedCol = this.location[1];
+		if (checkedRow < 5 && checkedCol < 5 && checkedRow >= 0 && checkedCol >= 0){ //check bounds
+			if (board[checkedRow][checkedCol] instanceof EmptySpace){
+				others.add(new Move(this, checkedRow, checkedCol, parentBoard));
+			}
+			else if(board[checkedRow][checkedCol].alignment != this.alignment){
+				captures.add(new Move(this, checkedRow, checkedCol, parentBoard));
+				captureFound = true;
+			}
+		}
+
+		//check up-right
+		checkedRow = this.location[0] - 1;
+		checkedCol = this.location[1] + 1;
+		if (checkedRow < 5 && checkedCol < 5 && checkedRow >= 0 && checkedCol >= 0){ //check bounds
+			if (board[checkedRow][checkedCol] instanceof EmptySpace){
+				others.add(new Move(this, checkedRow, checkedCol, parentBoard));
+			}
+			else if(board[checkedRow][checkedCol].alignment != this.alignment){
+				captures.add(new Move(this, checkedRow, checkedCol, parentBoard));
+				captureFound = true;
+			}
+		}
+
+		//check up-left
+		checkedRow = this.location[0] - 1;
+		checkedCol = this.location[1] - 1;
+		if (checkedRow < 5 && checkedCol < 5 && checkedRow >= 0 && checkedCol >= 0){ //check bounds
+			if (board[checkedRow][checkedCol] instanceof EmptySpace){
+				others.add(new Move(this, checkedRow, checkedCol, parentBoard));
+			}
+			else if(board[checkedRow][checkedCol].alignment != this.alignment){
+				captures.add(new Move(this, checkedRow, checkedCol, parentBoard));
+				captureFound = true;
+			}
+		}
+
+		//check down
+		checkedRow = this.location[0] + 1;
+		checkedCol = this.location[1];
+		if (checkedRow < 5 && checkedCol < 5 && checkedRow >= 0 && checkedCol >= 0){ //check bounds
+			if (board[checkedRow][checkedCol] instanceof EmptySpace){
+				others.add(new Move(this, checkedRow, checkedCol, parentBoard));
+			}
+			else if(board[checkedRow][checkedCol].alignment != this.alignment){
+				captures.add(new Move(this, checkedRow, checkedCol, parentBoard));
+				captureFound = true;
+			}
+		}
+
+		//check down - right
+		checkedRow = this.location[0] + 1;
+		checkedCol = this.location[1] + 1;
+		if (checkedRow < 5 && checkedCol < 5 && checkedRow >= 0 && checkedCol >= 0){ //check bounds
+			if (board[checkedRow][checkedCol] instanceof EmptySpace){
+				others.add(new Move(this, checkedRow, checkedCol, parentBoard));
+			}
+			else if(board[checkedRow][checkedCol].alignment != this.alignment){
+				captures.add(new Move(this, checkedRow, checkedCol, parentBoard));
+				captureFound = true;
+			}
+		}
+
+		//check down - left
+		checkedRow = this.location[0] + 1;
+		checkedCol = this.location[1] - 1;
+		if (checkedRow < 5 && checkedCol < 5 && checkedRow >= 0 && checkedCol >= 0){ //check bounds
+			if (board[checkedRow][checkedCol] instanceof EmptySpace){
+				others.add(new Move(this, checkedRow, checkedCol, parentBoard));
+			}
+			else if(board[checkedRow][checkedCol].alignment != this.alignment){
+				captures.add(new Move(this, checkedRow, checkedCol, parentBoard));
+				captureFound = true;
+			}
+		}
+
+		//check right
+		checkedRow = this.location[0];
+		checkedCol = this.location[1] + 1;
+		if (checkedRow < 5 && checkedCol < 5 && checkedRow >= 0 && checkedCol >= 0){ //check bounds
+			if (board[checkedRow][checkedCol] instanceof EmptySpace){
+				others.add(new Move(this, checkedRow, checkedCol, parentBoard));
+			}
+			else if(board[checkedRow][checkedCol].alignment != this.alignment){
+				captures.add(new Move(this, checkedRow, checkedCol, parentBoard));
+				captureFound = true;
+			}
+		}
+
+		//check left
+		checkedRow = this.location[0];
+		checkedCol = this.location[1] - 1;
+		if (checkedRow < 5 && checkedCol < 5 && checkedRow >= 0 && checkedCol >= 0){ //check bounds
+			if (board[checkedRow][checkedCol] instanceof EmptySpace){
+				others.add(new Move(this, checkedRow, checkedCol, parentBoard));
+			}
+			else if(board[checkedRow][checkedCol].alignment != this.alignment){
+				captures.add(new Move(this, checkedRow, checkedCol, parentBoard));
+				captureFound = true;
+			}
+		}
+
+		if (captureFound){
+			this.availableMoves = captures;
+		}
+		else{
+			this.availableMoves = others;
+		}
 	}
 
 	@Override
@@ -42,12 +155,14 @@ public class King extends Piece {
 		}
 	}
 	@Override
-        public int getHeuristicScore(){
-           if (this.alignment)
-               return 1;
-           else
-               return -1;
-        }
+	public int getHeuristicScore(boolean playerAlignment){
+		int pieceScore = 1;
+		if (this.alignment != playerAlignment){
+			pieceScore = -pieceScore;
+		}
+
+		return pieceScore + getLocationScore(playerAlignment);
+	}
 
 
 }

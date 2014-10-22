@@ -69,8 +69,8 @@ public class Knight extends Piece {
 				}
 			}
 		}
-		
-		
+
+
 		proposedCol1 = location[1] + 2;
 		proposedCol2 = location[1] - 2;
 		//check one up, two over
@@ -93,7 +93,7 @@ public class Knight extends Piece {
 				}
 			}
 		}
-		
+
 		//check one down, two over
 		proposedRow = location[0] + 1;
 		if (proposedRow >= 0 && proposedRow <5){//bounds checking
@@ -114,7 +114,7 @@ public class Knight extends Piece {
 				}
 			}
 		}
-		
+
 		if (captureMoves.isEmpty()){
 			this.availableMoves = otherMoves;
 		}
@@ -137,11 +137,13 @@ public class Knight extends Piece {
 		}
 	}
 	@Override
-        public int getHeuristicScore(){
-           if (this.alignment)
-               return -1;
-           else
-               return 1;
-        }
+	public int getHeuristicScore(boolean playerAlignment){
+		int pieceScore = 1;
+    	if (this.alignment != playerAlignment){
+    		pieceScore = -pieceScore;
+    	}
+       
+    	return pieceScore + getLocationScore(playerAlignment);
+	}
 
 }
