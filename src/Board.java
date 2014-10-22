@@ -120,12 +120,10 @@ public class Board {
 			if (boardArray[0][col] instanceof Pawn){
 				boolean color = boardArray[0][col].alignment;
 				boardArray[0][col] = new King(new int[]{0, col}, color, this);
-				System.out.println("Found one");
 			}
 			if(boardArray[4][col] instanceof Pawn){
 				boolean color = boardArray[4][col].alignment;
 				boardArray[4][col] = new King(new int[]{4, col}, color, this);
-				System.out.println("Found one");
 			}
 		}
 	}

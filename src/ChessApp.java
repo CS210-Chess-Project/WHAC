@@ -1,3 +1,5 @@
+import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -8,6 +10,7 @@ import java.awt.event.MouseListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 /**
  * Handles all the fiddly graphical stuff and ties everything together.
@@ -46,6 +49,8 @@ public class ChessApp {
 	private BoardDisplay graphicalBoard;
 
 	private JFrame frame;
+	private JPanel frameContent;
+	private JPanel infoPane;
 
 	/**
 	 * Launch the application.
@@ -76,9 +81,19 @@ public class ChessApp {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 600, 600);
+		frame.setBounds(0, 0, 1000, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
+		
+		frameContent = new JPanel();
+		frame.getContentPane().add(frameContent);
+		frameContent.setBounds(10, 10, 700, 640);
+		frameContent.setLayout(null);
+		
+		infoPane = new JPanel();
+		frame.getContentPane().add(infoPane);
+		infoPane.setBounds(710, 10, 300, 640);
+		infoPane.setLayout(null);
 	}
 
 	private void choosePlayerCount(){		
@@ -91,8 +106,8 @@ public class ChessApp {
 				easyOrAdvanced();
 			}
 		});
-		frame.getContentPane().add(singlePlayerButton);
-		singlePlayerButton.setBounds(frame.getWidth()/4, frame.getHeight()/2 - frame.getHeight()/3, frame.getWidth()/2, frame.getHeight()/6);
+		frameContent.add(singlePlayerButton);
+		singlePlayerButton.setBounds(frameContent.getWidth()/4, frameContent.getHeight()/2 - frameContent.getHeight()/3, frameContent.getWidth()/2, frameContent.getHeight()/6);
 
 		JButton twoPlayerButton = new JButton();
 		twoPlayerButton.setFont(new Font("Arial Black", Font.PLAIN, 24));
@@ -103,16 +118,17 @@ public class ChessApp {
 				easyOrAdvanced();
 			}
 		});
-		frame.getContentPane().add(twoPlayerButton);
-		twoPlayerButton.setBounds(frame.getWidth()/4, frame.getHeight()/2 + frame.getHeight()/10, frame.getWidth()/2, frame.getHeight()/6);
+		frameContent.add(twoPlayerButton);
+		twoPlayerButton.setBounds(frameContent.getWidth()/4, frameContent.getHeight()/2 + frameContent.getHeight()/10, frameContent.getWidth()/2, frameContent.getHeight()/6);
 
 	}
 
 	private void easyOrAdvanced(){
-		//clear the frame
-		frame.getContentPane().removeAll();
-		frame.revalidate();
-		frame.repaint();
+		//clear the contentPane
+//		frame.getContentPane().removeAll();
+//		frame.revalidate();
+//		frame.repaint();
+		clearContentPane();
 
 		JButton easyButton = new JButton();
 		easyButton.setFont(new Font("Arial Black", Font.PLAIN, 24));
@@ -126,8 +142,8 @@ public class ChessApp {
 				else{ startTwoPlayerGame();	}
 			}
 		});
-		frame.getContentPane().add(easyButton);
-		easyButton.setBounds(frame.getWidth()/4, frame.getHeight()/2 - frame.getHeight()/3, frame.getWidth()/2, frame.getHeight()/6);
+		frameContent.add(easyButton);
+		easyButton.setBounds(frameContent.getWidth()/4, frameContent.getHeight()/2 - frameContent.getHeight()/3, frameContent.getWidth()/2, frameContent.getHeight()/6);
 
 		JButton advancedButton = new JButton();
 		advancedButton.setFont(new Font("Arial Black", Font.PLAIN, 24));
@@ -141,24 +157,18 @@ public class ChessApp {
 				else{ startTwoPlayerGame();}
 			}
 		});
-		frame.getContentPane().add(advancedButton);
-		advancedButton.setBounds(frame.getWidth()/4, frame.getHeight()/2 + frame.getHeight()/10, frame.getWidth()/2, frame.getHeight()/6);
+		frameContent.add(advancedButton);
+		advancedButton.setBounds(frameContent.getWidth()/4, frameContent.getHeight()/2 + frameContent.getHeight()/10, frameContent.getWidth()/2, frameContent.getHeight()/6);
 	}
 
 	private void startSinglePlayerGame(){
-		//clear the frame
-		frame.getContentPane().removeAll(); //clear the frame
-		frame.revalidate();
-		frame.repaint();
+		clearContentPane();
 
 		//TODO the rest of the single player logic
 	}
 
 	private void whoGoesFirst(){
-		//clear the frame
-		frame.getContentPane().removeAll(); //clear the frame
-		frame.revalidate();
-		frame.repaint();
+		clearContentPane();
 
 		//add label
 		JLabel title = new JLabel();
@@ -178,8 +188,8 @@ public class ChessApp {
 				startSinglePlayerGame();
 			}
 		});
-		frame.getContentPane().add(playerButton);
-		playerButton.setBounds(frame.getWidth()/4, frame.getHeight()/2 - frame.getHeight()/3, frame.getWidth()/2, frame.getHeight()/6);
+		frameContent.add(playerButton);
+		playerButton.setBounds(frameContent.getWidth()/4, frameContent.getHeight()/2 - frameContent.getHeight()/3, frameContent.getWidth()/2, frameContent.getHeight()/6);
 
 		JButton compButton = new JButton();
 		compButton.setFont(new Font("Arial Black", Font.PLAIN, 24));
@@ -191,15 +201,12 @@ public class ChessApp {
 				startSinglePlayerGame();
 			}
 		});
-		frame.getContentPane().add(compButton);
-		compButton.setBounds(frame.getWidth()/4, frame.getHeight()/2 + frame.getHeight()/10, frame.getWidth()/2, frame.getHeight()/6);
+		frameContent.add(compButton);
+		compButton.setBounds(frameContent.getWidth()/4, frameContent.getHeight()/2 + frameContent.getHeight()/10, frameContent.getWidth()/2, frameContent.getHeight()/6);
 	}
 
 	private void decidePlayerColor(){
-		//clear the frame
-		frame.getContentPane().removeAll(); //clear the frame
-		frame.revalidate();
-		frame.repaint();
+		clearContentPane();
 
 		//add label
 		JLabel title = new JLabel();
@@ -218,8 +225,8 @@ public class ChessApp {
 				whoGoesFirst();
 			}
 		});
-		frame.getContentPane().add(whiteButton);
-		whiteButton.setBounds(frame.getWidth()/4, frame.getHeight()/2 - frame.getHeight()/3, frame.getWidth()/2, frame.getHeight()/6);
+		frameContent.add(whiteButton);
+		whiteButton.setBounds(frameContent.getWidth()/4, frameContent.getHeight()/2 - frameContent.getHeight()/3, frameContent.getWidth()/2, frameContent.getHeight()/6);
 
 		JButton blackButton = new JButton();
 		blackButton.setFont(new Font("Arial Black", Font.PLAIN, 24));
@@ -230,21 +237,20 @@ public class ChessApp {
 				whoGoesFirst();
 			}
 		});
-		frame.getContentPane().add(blackButton);
-		blackButton.setBounds(frame.getWidth()/4, frame.getHeight()/2 + frame.getHeight()/10, frame.getWidth()/2, frame.getHeight()/6);
+		frameContent.add(blackButton);
+		blackButton.setBounds(frameContent.getWidth()/4, frameContent.getHeight()/2 + frameContent.getHeight()/10, frameContent.getWidth()/2, frameContent.getHeight()/6);
 	}
 
 	private void startTwoPlayerGame(){
-		//clear the frame
-		frame.getContentPane().removeAll(); //clear the frame
-		frame.revalidate();
-		frame.repaint();
+		clearContentPane();
+		
 		//set relevant constants
 		singlePlayerGame = false;
+		
 		//create board and wire up listeners
 		Board board = new Board(easyMode);
-		this.graphicalBoard = new BoardDisplay(frame.getContentPane().getWidth(), frame.getContentPane().getHeight(), board);
-		frame.getContentPane().add(graphicalBoard);
+		this.graphicalBoard = new BoardDisplay(frameContent.getWidth(), frameContent.getHeight(), board);
+		frameContent.add(graphicalBoard);
 
 		//wire stuff up:
 		wireUpMouseListener(graphicalBoard);
@@ -333,17 +339,17 @@ public class ChessApp {
 		int colNum = 0;
 		int rowNum = 0;
 		//determine colNum from x coordinate clicked
-		if (between(xClicked, 0, frame.getWidth()/5)){ colNum = 0;}
-		else if (between(xClicked, frame.getWidth()/5, frame.getWidth()*2/5)){ colNum = 1;}
-		else if (between(xClicked, frame.getWidth()*2/5, frame.getWidth()*3/5)){ colNum = 2;}
-		else if (between(xClicked, frame.getWidth()*3/5, frame.getWidth()*4/5)){ colNum = 3;}
-		else if (between(xClicked, frame.getWidth()*4/5, frame.getWidth()*5/5)){ colNum = 4;}
+		if (between(xClicked, 0, frameContent.getWidth()/5)){ colNum = 0;}
+		else if (between(xClicked, frameContent.getWidth()/5, frameContent.getWidth()*2/5)){ colNum = 1;}
+		else if (between(xClicked, frameContent.getWidth()*2/5, frameContent.getWidth()*3/5)){ colNum = 2;}
+		else if (between(xClicked, frameContent.getWidth()*3/5, frameContent.getWidth()*4/5)){ colNum = 3;}
+		else if (between(xClicked, frameContent.getWidth()*4/5, frameContent.getWidth()*5/5)){ colNum = 4;}
 		//determine rowNum from y coord
-		if (between(yClicked, 0, frame.getHeight()/5)){ rowNum = 0;}
-		else if(between(yClicked, frame.getHeight()/5, frame.getHeight()*2/5)){ rowNum = 1;}
-		else if(between(yClicked, frame.getHeight()*2/5, frame.getHeight()*3/5)){ rowNum = 2;}
-		else if(between(yClicked, frame.getHeight()*3/5, frame.getHeight()*4/5)){ rowNum = 3;}
-		else if(between(yClicked, frame.getHeight()*4/5, frame.getHeight()*5/5)){ rowNum = 4;}
+		if (between(yClicked, 0, frameContent.getHeight()/5)){ rowNum = 0;}
+		else if(between(yClicked, frameContent.getHeight()/5, frameContent.getHeight()*2/5)){ rowNum = 1;}
+		else if(between(yClicked, frameContent.getHeight()*2/5, frameContent.getHeight()*3/5)){ rowNum = 2;}
+		else if(between(yClicked, frameContent.getHeight()*3/5, frameContent.getHeight()*4/5)){ rowNum = 3;}
+		else if(between(yClicked, frameContent.getHeight()*4/5, frameContent.getHeight()*5/5)){ rowNum = 4;}
 
 
 		//set corresponding constants
@@ -363,17 +369,17 @@ public class ChessApp {
 		int colNum = 0;
 		int rowNum = 0;
 		//determine colNum from x coordinate clicked
-		if (between(xClicked, 0, frame.getWidth()/5)){ colNum = 0;}
-		else if (between(xClicked, frame.getWidth()/5, frame.getWidth()*2/5)){ colNum = 1;}
-		else if (between(xClicked, frame.getWidth()*2/5, frame.getWidth()*3/5)){ colNum = 2;}
-		else if (between(xClicked, frame.getWidth()*3/5, frame.getWidth()*4/5)){ colNum = 3;}
-		else if (between(xClicked, frame.getWidth()*4/5, frame.getWidth()*5/5)){ colNum = 4;}
+		if (between(xClicked, 0, frameContent.getWidth()/5)){ colNum = 0;}
+		else if (between(xClicked, frameContent.getWidth()/5, frameContent.getWidth()*2/5)){ colNum = 1;}
+		else if (between(xClicked, frameContent.getWidth()*2/5, frameContent.getWidth()*3/5)){ colNum = 2;}
+		else if (between(xClicked, frameContent.getWidth()*3/5, frameContent.getWidth()*4/5)){ colNum = 3;}
+		else if (between(xClicked, frameContent.getWidth()*4/5, frameContent.getWidth()*5/5)){ colNum = 4;}
 		//determine rowNum from y coord
-		if (between(yClicked, 0, frame.getHeight()/5)){ rowNum = 0;}
-		else if(between(yClicked, frame.getHeight()/5, frame.getHeight()*2/5)){ rowNum = 1;}
-		else if(between(yClicked, frame.getHeight()*2/5, frame.getHeight()*3/5)){ rowNum = 2;}
-		else if(between(yClicked, frame.getHeight()*3/5, frame.getHeight()*4/5)){ rowNum = 3;}
-		else if(between(yClicked, frame.getHeight()*4/5, frame.getHeight()*5/5)){ rowNum = 4;}
+		if (between(yClicked, 0, frameContent.getHeight()/5)){ rowNum = 0;}
+		else if(between(yClicked, frameContent.getHeight()/5, frameContent.getHeight()*2/5)){ rowNum = 1;}
+		else if(between(yClicked, frameContent.getHeight()*2/5, frameContent.getHeight()*3/5)){ rowNum = 2;}
+		else if(between(yClicked, frameContent.getHeight()*3/5, frameContent.getHeight()*4/5)){ rowNum = 3;}
+		else if(between(yClicked, frameContent.getHeight()*4/5, frameContent.getHeight()*5/5)){ rowNum = 4;}
 
 		//set appropriate release constants
 		releasedY = clickY;
@@ -398,4 +404,9 @@ public class ChessApp {
 		}
 	}
 
+	private void clearContentPane(){
+		frameContent.removeAll();
+		frameContent.revalidate();
+		frameContent.repaint();		
+	}
 }
