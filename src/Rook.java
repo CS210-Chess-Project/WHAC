@@ -41,5 +41,12 @@ public class Rook extends Piece {
 			image = null;
 		}
 	}
+	@Override
+        public int getHeuristicScore(){
+           if (this.alignment)
+               return -2;
+           else
+               return 2;
+        }
 
 }
