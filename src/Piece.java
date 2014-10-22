@@ -16,6 +16,7 @@ public abstract class Piece {
 	protected boolean alignment;  //True = WHITE; false=BLACK
 	protected BufferedImage image; //image to render when piece is drawn
 	protected Board parentBoard;
+	protected int score;
 	
 	public Piece(int[] location){
 		this.location = location;
@@ -61,7 +62,10 @@ public abstract class Piece {
 	public int[] getLocation() {
 		return location;
 	}
-
+	
+	public int getHeuristicScore(){
+            return score;
+        }
 
 
 	public void setLocation(int[] location) {
