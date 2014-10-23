@@ -59,5 +59,16 @@ public class Move {
 		this.targetPiece = targetPiece;
 	}
 	
+	public String toString(){
+		String color = "white";
+		if (targetPiece.getAlignment()!=Board.WHITE){
+			color = "black";
+		}
+		
+		String type = targetPiece.getClass().toString();
+		
+		return color + " " + type + " to " + this.row + ", " + this.col;
+	}
+	
 		
 }

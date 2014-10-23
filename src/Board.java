@@ -1,11 +1,15 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Class to represent the game board or various lookahead board states.
  * @author Zach
  *
  */
-public class Board {
+public class Board{
+	//test:
+	private static Piece focusPiece;
+
 	public static final boolean BLACK =false;
 	public static final boolean WHITE = true;
 
@@ -60,8 +64,44 @@ public class Board {
 		}
 	}
 
+	/**
+	 * Constructor that makes a deep copy of another board.
+	 * @param boardState the Piece array representing the other board
+	 */
 	public Board(Piece[][] boardState){
-		this.boardArray = boardState;
+		//arrays in Java are passed by reference(sort of), so we have to copy the passed array here
+		Piece[][] newBoardState = new Piece[5][5];
+		for(int col = 0; col < 5; col++){
+			for(int row = 0; row < 5; row++){
+				Piece oldPiece = boardState[row][col];
+				Piece pieceToAdd = null;
+				if (oldPiece instanceof Pawn){
+					pieceToAdd = new Pawn(new int[]{row, col}, oldPiece.alignment, this);
+				}
+				else if (oldPiece instanceof King){
+					pieceToAdd = new King(new int[]{row, col}, oldPiece.alignment, this);
+				}
+				else if (oldPiece instanceof Queen){
+					pieceToAdd = new Queen(new int[]{row, col}, oldPiece.alignment, this);
+				}
+				else if (oldPiece instanceof Bishop){
+					pieceToAdd = new Bishop(new int[]{row, col}, oldPiece.alignment, this);
+				}
+				else if (oldPiece instanceof Knight){
+					pieceToAdd = new Knight(new int[]{row, col}, oldPiece.alignment, this);
+				}
+				else if (oldPiece instanceof Rook){
+					pieceToAdd = new Rook(new int[]{row, col}, oldPiece.alignment, this);
+				}
+				else if (oldPiece instanceof EmptySpace){
+					pieceToAdd = new EmptySpace(new int[]{row, col});
+				}
+				newBoardState[row][col] = pieceToAdd;
+			}
+		}
+
+		this.boardArray = newBoardState;
+
 	}
 
 	public boolean isStalemate(){
@@ -97,11 +137,11 @@ public class Board {
 	//really more of a helper method for makeMove that takes a move object
 	public void makeMove(Piece p, int row, int col){
 		int[] location = p.getLocation(); //get current location
-		this.boardArray[location[0]][location[1]] = new EmptySpace(location);
+		this.boardArray[location[0]][location[1]] = new EmptySpace(new int[]{location[0], location[1]});
 		p.setLocation(new int[]{row, col});
 
 		boardArray[row][col] = p;
-		
+
 		endOfMoveProcessing();
 	}
 
@@ -109,7 +149,7 @@ public class Board {
 	public void makeMove(Move m){
 		this.makeMove(m.getTargetPiece(), m.getRow(), m.getCol());		
 	}
-	
+
 	/**
 	 * This method performs end of move tasks such as checking for pawns that need to be "kinged"
 	 * Later this might check for game over or stalemate states
@@ -132,42 +172,89 @@ public class Board {
 	//  ---------------------------MINIMAX search related methods ----------------------------------
 	// I just kinda threw together framework for how I thought these might work.  If you need to modify them, feel free.
 
-	public Move getNextMove(int lookAheadNumber){
+	/**
+	 * Minimax lookahead to decide moves
+	 * 
+	 * @param lookAheadNumber the number of moves to look ahead
+	 * @param alpha the alpha value for alpha-beta pruning
+	 * @param beta the beta value for alpha-beta pruning
+	 * @param board the starting board
+	 * @param maximizing true if maximizing, false if minimizing
+	 * @return the optimal move
+	 */
+	public Move getNextMove(int lookAheadNumber, int alpha, int beta, int board, boolean maximizing){
 		//TODO: This is where most of the work will be done.  We will do a minimax search for the best moves, looking ahead the specified number of turns
-		//A Board state that represents our best move will be returned
+		//A Move object that represents our best move will be returned
 		return null;
 	}
 
-	public ArrayList<Board> nextTurnStates(){
-		//TODO : This method will return a list of all the possible board states at the next turn.
-		return null;
+	
+	/**
+	 * Generates a list of all the possible board states (boards resulting from a move) for a particular board
+	 * forColor specifies the color whose moves will be generated
+	 * This method omits non-capture moves if capture moves are available
+	 * @param forColor the alignment of the color we are generating moves for.  true = White, false = Black
+	 * @return an ArrayList of Boards, each one representing a possible move that stems from the current board
+	 */
+	public ArrayList<Board> nextTurnStates(boolean forColor){
+		ArrayList<Board> futureStates = new ArrayList<Board>();
+
+		ArrayList<Move> captures = new ArrayList<Move>();
+		ArrayList<Move> others = new ArrayList<Move>();
+		for (int col = 0; col < boardArray[0].length; col++){ //cols first in the loop so memory locations are contiguous
+			for (int row = 0; row < boardArray.length; row++){
+				if (boardArray[row][col].alignment == forColor){
+					ArrayList<Move> movesForPiece = boardArray[row][col].getAvailableMoves();
+					if (movesForPiece.size()>0){
+						if(movesForPiece.get(0).isCaptureMove()){
+							captures.addAll(movesForPiece);
+						}
+						else{
+							others.addAll(movesForPiece);
+						}
+					}
+				}
+			}
+		}
+
+		if (captures.size()>0){
+			for (Move m:captures){
+				Board toAdd = new Board(this.boardArray);
+				int pieceRow = m.getTargetPiece().getLocation()[0];
+				int pieceCol = m.getTargetPiece().getLocation()[1];
+				toAdd.makeMove(toAdd.getBoardArray()[pieceRow][pieceCol], m.getRow(), m.getCol());
+				futureStates.add(toAdd);
+			}
+		}
+		else{
+			for (Move m:others){				
+				Board toAdd = new Board(this.boardArray);
+				int pieceRow = m.getTargetPiece().getLocation()[0];
+				int pieceCol = m.getTargetPiece().getLocation()[1];
+				//I learned the hard way, It's extremely important NOT to use the target piece from the Move object.  That way we avoid passing the target piece by reference
+				toAdd.makeMove(toAdd.getBoardArray()[pieceRow][pieceCol], m.getRow(), m.getCol());
+				futureStates.add(toAdd);
+			}
+		}
+
+		return futureStates;
 	}
 
+	/**
+	 * Evalutes the board object and returns a heuristic score.  A higher score is better for the evaluting player (in this case, our AI)
+	 * @param playerColor The player from whose perspective we score.
+	 * @return a numeric score
+	 */
 	public double evaluateSelf(boolean playerColor){
+		//TODO: modify this to include number of moves in the score
 		double pieceMoves = 0;
 		double boardScore = 0;
 		//these should depend on who controls the piece.  It's bad if our piece is in the middle, but good if our opponent's is.  So I moved these to the individual classes
 		// I also combined the scoring for a piece into one method, so we can just sum up the scores of all the pieces
 		// This now gives a better indication of a good/bad board.  A completely neutral board will have a score of 0 (for example the starting board).
 		// The score will change based on how we move.  For example, moving our piece to the center of the board will cause the score to fall below 0
-		//this is demonstrated in the main method of this class
 		for(int row = 0; row < 5; row++){
 			for(int col = 0; col < 5; col++){
-				/*if((row == 0 && col == 0)||(row == 0 && col == 4))
-					pieceLocationScore = -4;
-				else if((row == 4 && col == 0) || (row == 4 && col == 4))
-					pieceLocationScore = 4;
-				else if(row == 0 ||  col == 0)
-					pieceLocationScore = -3;
-				else if(row == 4 || col == 4)
-					pieceLocationScore = 3;
-				else if((row == 2 && (col != 0 || col != 4) || (col == 2 && (row != 0 || row != 4))))
-					pieceLocationScore = -5;
-				else
-					pieceLocationScore = 1;
-				ArrayList<Move> allMovesForPiece = boardArray[row][col].getAvailableMoves();
-				pieceMoves = allMovesForPiece.size() + pieceMoves;
-				pieceTypeScore = boardArray[row][col].getHeuristicScore() + pieceTypeScore;*/
 				boardScore += boardArray[row][col].getHeuristicScore(playerColor);
 			}
 		}
@@ -206,12 +293,17 @@ public class Board {
 	//test method
 	/*public static void main(String[] args){
 		Board board = new Board(true);
-		System.out.println(board.evaluateSelf(Board.WHITE));
-		board.makeMove(board.getPieceAt(3,2), 1, 2);
-		System.out.println(board.toString());
-		System.out.println(board.evaluateSelf(Board.WHITE));
-		board.makeMove(board.getPieceAt(4,2),1,2);
-		System.out.println(board.evaluateSelf(Board.WHITE));
+		focusPiece = board.getPieceAt(3, 2);
+		board.makeMove(board.getPieceAt(3,2), 2, 2);
+		board.nextTurnStates(board.BLACK);
+
+
+		//		System.out.println(board.evaluateSelf(Board.WHITE));
+		//		board.makeMove(board.getPieceAt(3,2), 1, 2);
+		//		System.out.println(board.toString());
+		//		System.out.println(board.evaluateSelf(Board.WHITE));
+		//		board.makeMove(board.getPieceAt(4,2),1,2);
+		//		System.out.println(board.evaluateSelf(Board.WHITE));
 	}*/
 
 

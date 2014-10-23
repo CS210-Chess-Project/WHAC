@@ -45,7 +45,7 @@ public class ChessApp {
 
 	Piece selectedPiece;
 
-	//variabled for global graphical components
+	//variables for global graphical components
 	private BoardDisplay graphicalBoard;
 
 	private JFrame frame;
@@ -257,7 +257,6 @@ public class ChessApp {
 	}
 
 	private void wireUpMouseListener(BoardDisplay bd){
-		System.out.println("Wiring up stuff");
 		bd.addMouseListener(new MouseListener(){
 
 			@Override
