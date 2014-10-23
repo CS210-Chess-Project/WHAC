@@ -172,6 +172,7 @@ public class Board{
 	//  ---------------------------MINIMAX search related methods ----------------------------------
 	// I just kinda threw together framework for how I thought these might work.  If you need to modify them, feel free.
 
+<<<<<<< HEAD
 	/**
 	 * Minimax lookahead to decide moves
 	 * 
@@ -183,6 +184,28 @@ public class Board{
 	 * @return the optimal move
 	 */
 	public Move getNextMove(int lookAheadNumber, int alpha, int beta, int board, boolean maximizing){
+=======
+	public Move getNextMove(int lookAheadNumber){
+		double threshold;
+                double alpha;
+                double beta;
+                if(lookAheadNumber == 0){
+                    
+                }
+                else
+                {
+                    ArrayList<Board> next = nextTurnStates();
+                    for(int i = 0; i < next.size(); i++)
+                        next.get(i).getNextMove(lookAheadNumber-1);
+                }
+                //This is the basis for the recursion. Beginning with the current board, it will look ahead at all the boards inside each
+                //board arraylist until the best move is found. There's still a lot of work to do, but this is a good starting point.
+                //I feel bad about using a for-loop in a recursion, but I couldn't think of a different way to look inside each board in the array.
+                //Once I start assigning alpha and beta values, I'll add code to prune (breaking out a for loop early, breaking the recursion, etc.).
+                //The future idea is to take the board that scores the "best" value and determine what inital move needs to make that happen, and
+                //then constructing a Move object with the proper variables. - Mark
+                
+>>>>>>> 32a4e2eb30b0059de11f528a2ca588170ec72e15
 		//TODO: This is where most of the work will be done.  We will do a minimax search for the best moves, looking ahead the specified number of turns
 		//A Move object that represents our best move will be returned
 		return null;
