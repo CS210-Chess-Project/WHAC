@@ -44,6 +44,8 @@ public class ChessApp {
 
 
 	Piece selectedPiece;
+	
+	int maxLookAhead =4;
 
 	//variables for global graphical components
 	private BoardDisplay graphicalBoard;
@@ -84,12 +86,12 @@ public class ChessApp {
 		frame.setBounds(0, 0, 1000, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
-		
+
 		frameContent = new JPanel();
 		frame.getContentPane().add(frameContent);
 		frameContent.setBounds(10, 10, 700, 640);
 		frameContent.setLayout(null);
-		
+
 		infoPane = new JPanel();
 		frame.getContentPane().add(infoPane);
 		infoPane.setBounds(710, 10, 300, 640);
@@ -125,9 +127,9 @@ public class ChessApp {
 
 	private void easyOrAdvanced(){
 		//clear the contentPane
-//		frame.getContentPane().removeAll();
-//		frame.revalidate();
-//		frame.repaint();
+		//		frame.getContentPane().removeAll();
+		//		frame.revalidate();
+		//		frame.repaint();
 		clearContentPane();
 
 		JButton easyButton = new JButton();
@@ -164,6 +166,25 @@ public class ChessApp {
 	private void startSinglePlayerGame(){
 		clearContentPane();
 
+		//set relevant constants
+		singlePlayerGame = true;
+
+		//create board and wire up listeners
+		Board board = new Board(easyMode);
+		this.graphicalBoard = new BoardDisplay(frameContent.getWidth(), frameContent.getHeight(), board);
+		frameContent.add(graphicalBoard);
+		frame.repaint();
+
+		//wire stuff up:
+		wireUpMouseListener(graphicalBoard);
+
+		if (!playerGoFirst){
+			//make AI move:
+			graphicalBoard.setBoard(board.getNextMove(!playerColor, maxLookAhead));
+			
+			//change constants:
+			playersMove = true;
+		}
 		//TODO the rest of the single player logic
 	}
 
@@ -243,10 +264,10 @@ public class ChessApp {
 
 	private void startTwoPlayerGame(){
 		clearContentPane();
-		
+
 		//set relevant constants
 		singlePlayerGame = false;
-		
+
 		//create board and wire up listeners
 		Board board = new Board(easyMode);
 		this.graphicalBoard = new BoardDisplay(frameContent.getWidth(), frameContent.getHeight(), board);
@@ -290,9 +311,19 @@ public class ChessApp {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {	
 				if (selectedPiece!= null){
+					boolean correctColor;
+					if (playersMove){
+						correctColor = playerColor;
+					}
+					else{
+						correctColor = !playerColor;
+					}
 					getLocationReleased(arg0.getX(), arg0.getY(), bd.getBoard()); //sets constants releasedCol and releasedRow
-					if (releasedCol == pressedCol && releasedRow == pressedRow){
-						//do nothing.  attempted move to same spot
+					if(selectedPiece.alignment != correctColor){
+						//disallow move: not your turn
+					}
+					else if (releasedCol == pressedCol && releasedRow == pressedRow ){ //failing conditions for a move
+						//do nothing. attempted move to same location
 					}
 					else{
 						//prevent illegal moves:
@@ -314,8 +345,23 @@ public class ChessApp {
 						if (moveLegal){
 							bd.getBoard().makeMove(new Move(selectedPiece, releasedRow, releasedCol, bd.getBoard()));
 							bd.repaint();
+							try {
+								Thread.sleep(1000);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 
 							playersMove = !playersMove; //make it the other persons move
+							
+							//if its singleplayer, make AI move:
+							//TODO: notify user that AI is making move
+							//make AI move:
+							graphicalBoard.setBoard(graphicalBoard.getBoard().getNextMove(!playerColor, maxLookAhead));
+							
+							//change constants:
+							playersMove = true;
+							
 						}
 						else{
 							//TODO: notify the user that this move isn't legal
@@ -393,7 +439,7 @@ public class ChessApp {
 	private boolean between(int num, int lower, int higher){
 		return (lower < num && higher > num);
 	}
-	
+
 	private boolean currentPlayersColor(){
 		if (playersMove){
 			return playerColor;

@@ -172,7 +172,6 @@ public class Board{
 	//  ---------------------------MINIMAX search related methods ----------------------------------
 	// I just kinda threw together framework for how I thought these might work.  If you need to modify them, feel free.
 
-<<<<<<< HEAD
 	/**
 	 * Minimax lookahead to decide moves
 	 * 
@@ -183,35 +182,99 @@ public class Board{
 	 * @param maximizing true if maximizing, false if minimizing
 	 * @return the optimal move
 	 */
-	public Move getNextMove(int lookAheadNumber, int alpha, int beta, int board, boolean maximizing){
-=======
-	public Move getNextMove(int lookAheadNumber){
-		double threshold;
-                double alpha;
-                double beta;
-                if(lookAheadNumber == 0){
-                    
-                }
-                else
-                {
-                    ArrayList<Board> next = nextTurnStates();
-                    for(int i = 0; i < next.size(); i++)
-                        next.get(i).getNextMove(lookAheadNumber-1);
-                }
-                //This is the basis for the recursion. Beginning with the current board, it will look ahead at all the boards inside each
-                //board arraylist until the best move is found. There's still a lot of work to do, but this is a good starting point.
-                //I feel bad about using a for-loop in a recursion, but I couldn't think of a different way to look inside each board in the array.
-                //Once I start assigning alpha and beta values, I'll add code to prune (breaking out a for loop early, breaking the recursion, etc.).
-                //The future idea is to take the board that scores the "best" value and determine what inital move needs to make that happen, and
-                //then constructing a Move object with the proper variables. - Mark
-                
->>>>>>> 32a4e2eb30b0059de11f528a2ca588170ec72e15
+	//public Move getNextMove(int lookAheadNumber, int alpha, int beta, int board, boolean maximizing){
+	//temporarily void
+	public Board getNextMove(boolean forColor, int lookAheadNumber){
+//		double threshold;
+//		double alpha;
+//		double beta;
+//		if(lookAheadNumber == 0){
+//
+//		}
+//		else
+//		{
+//			ArrayList<Board> next = nextTurnStates();
+//			for(int i = 0; i < next.size(); i++)
+//				next.get(i).getNextMove(lookAheadNumber-1);
+//		}
+		//This is the basis for the recursion. Beginning with the current board, it will look ahead at all the boards inside each
+		//board arraylist until the best move is found. There's still a lot of work to do, but this is a good starting point.
+		//I feel bad about using a for-loop in a recursion, but I couldn't think of a different way to look inside each board in the array.
+		//Once I start assigning alpha and beta values, I'll add code to prune (breaking out a for loop early, breaking the recursion, etc.).
+		//The future idea is to take the board that scores the "best" value and determine what inital move needs to make that happen, and
+		//then constructing a Move object with the proper variables. - Mark
+
 		//TODO: This is where most of the work will be done.  We will do a minimax search for the best moves, looking ahead the specified number of turns
 		//A Move object that represents our best move will be returned
-		return null;
+		//return null;
+		
+		ArrayList<Board> potentialMoves = this.nextTurnStates(forColor);
+		return potentialMoves.get(this.minimax(forColor, true, lookAheadNumber, Integer.MIN_VALUE, Integer.MAX_VALUE)[1]);
 	}
 
-	
+	/**
+	 * Utility method to help with the minimax search.  Should return the index of the best child move
+	 * @param maximizing true if the caller is maximizing.  False if the caller is minimizig
+	 * @param lookahead how many moves to look ahead
+	 * @param alpha the current alpha value
+	 * @param beta the current beta value
+	 * @return the score of the best move
+	 */
+	private int[] minimax(boolean alignment, boolean maximizing, int lookahead, int alpha, int beta){
+		//pull down alpha-beta values from parent:
+		int thisNodesAlpha = alpha;
+		int thisNodesBeta = beta;
+		int currentValue; // the currentValue of the node - will be initialized momentarily based on whether we are maximizing or minimizing
+		int indexToReturn = -1;
+
+		//generate list of potential moves:
+		ArrayList<Board> potentialMoves = this.nextTurnStates(alignment);
+		//if we are at a leaf, just return the current board's score
+		if (potentialMoves.size() == 0 || lookahead == 0){ //two stopping conditions
+			return new int[]{this.evaluateSelf(alignment), indexToReturn};			
+		}
+		else{
+			if(maximizing){
+				currentValue = Integer.MIN_VALUE;
+				//go through the moves, pruning if possible:
+				for (int i = 0; i < potentialMoves.size(); i++){
+					if (thisNodesAlpha > thisNodesBeta){ //pruning condition
+						break; //stop
+					}
+					else{
+						//if we aren't pruning, then we check for value to pull up
+						int score = potentialMoves.get(i).minimax(alignment, !maximizing, lookahead-1, thisNodesAlpha, thisNodesBeta)[0];
+						if (score > currentValue){ //pull up condition
+							currentValue = score;
+							thisNodesAlpha = score;
+							indexToReturn = i;
+						}
+					}
+				}
+			}
+			else{ //minimizing
+				currentValue = Integer.MAX_VALUE;
+				//go through moves, pruning if possible:
+				for (int i = 0; i < potentialMoves.size(); i++){
+					if (thisNodesAlpha > thisNodesBeta){ //pruning condition
+						break; //stop
+					}
+					else{
+						int score = potentialMoves.get(i).minimax(alignment, !maximizing, lookahead-1, thisNodesAlpha, thisNodesBeta)[0];
+						if (score < currentValue){ //pull up condition
+							currentValue = score;
+							thisNodesBeta = score;
+							indexToReturn = i;
+						}
+					}
+				}
+			}
+		}
+		
+		return new int[]{currentValue, indexToReturn};
+	}
+
+
 	/**
 	 * Generates a list of all the possible board states (boards resulting from a move) for a particular board
 	 * forColor specifies the color whose moves will be generated
@@ -268,7 +331,7 @@ public class Board{
 	 * @param playerColor The player from whose perspective we score.
 	 * @return a numeric score
 	 */
-	public double evaluateSelf(boolean playerColor){
+	public int evaluateSelf(boolean playerColor){
 		//TODO: modify this to include number of moves in the score
 		double pieceMoves = 0;
 		double boardScore = 0;
@@ -282,7 +345,7 @@ public class Board{
 			}
 		}
 		this.score = boardScore;
-		return this.score;
+		return (int) this.score;
 	}
 
 	// ------------------------- End Minimax related methods --------------------------------
@@ -315,10 +378,17 @@ public class Board{
 
 	//test method
 	/*public static void main(String[] args){
-		Board board = new Board(true);
-		focusPiece = board.getPieceAt(3, 2);
-		board.makeMove(board.getPieceAt(3,2), 2, 2);
-		board.nextTurnStates(board.BLACK);
+		Board b = new Board(true);
+		
+		b.makeMove(b.getPieceAt(3, 0), 2, 0);
+		b = b.getNextMove(Board.BLACK, 8);
+		System.out.println(b.toString());
+		//System.out.println(b.getNextMove(Board.BLACK, 3).toString());
+	}*/
+//		Board board = new Board(true);
+//		focusPiece = board.getPieceAt(3, 2);
+//		board.makeMove(board.getPieceAt(3,2), 2, 2);
+//		board.nextTurnStates(board.BLACK);
 
 
 		//		System.out.println(board.evaluateSelf(Board.WHITE));
@@ -327,7 +397,7 @@ public class Board{
 		//		System.out.println(board.evaluateSelf(Board.WHITE));
 		//		board.makeMove(board.getPieceAt(4,2),1,2);
 		//		System.out.println(board.evaluateSelf(Board.WHITE));
-	}*/
+	
 
 
 }

@@ -38,6 +38,7 @@ public class BoardDisplay extends JPanel {
 	 * The method repaint() also schedules a call to this method.
 	 */
 	public void paintComponent(Graphics g){
+		super.paintComponent(g);
 		Graphics2D myG = (Graphics2D)g;
 		//paint grid:
 		myG.setColor(Color.BLACK);
@@ -81,5 +82,10 @@ public class BoardDisplay extends JPanel {
 	
 	public void setHighlightedMoves(ArrayList<Move> moves){
 		this.highlightedMoves  = moves;
+	}
+
+	public void setBoard(Board b) {
+		// TODO Auto-generated method stub
+		this.board = b;
 	}
 }
