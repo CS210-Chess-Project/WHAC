@@ -1,5 +1,3 @@
-import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -11,24 +9,24 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 /**
  * Handles all the fiddly graphical stuff and ties everything together.
  * It also handles game logic
- * I used the Eclipse plugin WindowBuilder (or something like that) to generate this class and the components of the GUI
  * @author Zach
  *
  */
 public class ChessApp {
 	//arbitrary constants
-	private final boolean WHITE = true;
-	private final boolean BLACK = false;
+	private static final boolean WHITE = true;
+	private static final boolean BLACK = false;
 
 	//variables related to game type/state
 	private boolean singlePlayerGame;
 	private boolean easyMode;
-	private boolean playersMove = true; //true = player 1, false = player 2 or computer
-	private boolean playerColor = WHITE;
+	private static boolean playersMove = true; //true = player 1, false = player 2 or computer
+	private static boolean playerColor = WHITE;
 	private boolean playerGoFirst = true;
 	private boolean gameOver = false;
 
@@ -44,13 +42,13 @@ public class ChessApp {
 
 
 	Piece selectedPiece;
-	
-	int maxLookAhead =4;
+
+	int maxLookAhead = 4;
 
 	//variables for global graphical components
-	private BoardDisplay graphicalBoard;
+	private static BoardDisplay graphicalBoard;
 
-	private JFrame frame;
+	private static JFrame frame;
 	private JPanel frameContent;
 	private JPanel infoPane;
 
@@ -58,11 +56,26 @@ public class ChessApp {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		//This timer makes the AI move if the correct flag has been set
+		Timer AITimer = new Timer(400,new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if(!playersMove){
+					graphicalBoard.setBoard(graphicalBoard.getBoard().getNextMove(!playerColor, 4));
+					playersMove = true;
+					frame.repaint();
+					System.out.println(graphicalBoard.getBoard().evaluateSelf(!playerColor));
+				}
+			}			
+		});
+		
+		AITimer.start();
+
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					ChessApp window = new ChessApp();
-					window.frame.setVisible(true);
+					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -171,21 +184,12 @@ public class ChessApp {
 
 		//create board and wire up listeners
 		Board board = new Board(easyMode);
-		this.graphicalBoard = new BoardDisplay(frameContent.getWidth(), frameContent.getHeight(), board);
+		graphicalBoard = new BoardDisplay(frameContent.getWidth(), frameContent.getHeight(), board);
 		frameContent.add(graphicalBoard);
 		frame.repaint();
 
-		//wire stuff up:
+		//wire up stuff:
 		wireUpMouseListener(graphicalBoard);
-
-		if (!playerGoFirst){
-			//make AI move:
-			graphicalBoard.setBoard(board.getNextMove(!playerColor, maxLookAhead));
-			
-			//change constants:
-			playersMove = true;
-		}
-		//TODO the rest of the single player logic
 	}
 
 	private void whoGoesFirst(){
@@ -342,26 +346,13 @@ public class ChessApp {
 								}
 							}
 						}
-						if (moveLegal){
+						if (moveLegal){						
 							bd.getBoard().makeMove(new Move(selectedPiece, releasedRow, releasedCol, bd.getBoard()));
 							bd.repaint();
-							try {
-								Thread.sleep(1000);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-
-							playersMove = !playersMove; //make it the other persons move
-							
-							//if its singleplayer, make AI move:
+							playersMove = !playersMove;
 							//TODO: notify user that AI is making move
-							//make AI move:
-							graphicalBoard.setBoard(graphicalBoard.getBoard().getNextMove(!playerColor, maxLookAhead));
-							
-							//change constants:
-							playersMove = true;
-							
+
+
 						}
 						else{
 							//TODO: notify the user that this move isn't legal
@@ -371,6 +362,8 @@ public class ChessApp {
 					//always un-highlight moves
 					bd.getHighlightedMoves().clear();
 					frame.repaint();
+
+
 				}
 			}
 

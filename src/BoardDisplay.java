@@ -14,6 +14,7 @@ import javax.swing.JPanel;
  */
 @SuppressWarnings("serial")
 public class BoardDisplay extends JPanel {
+	public boolean makeAIMove = false;
 	private Board board;
 	private ArrayList<Move> highlightedMoves = new ArrayList<Move>();
 
@@ -69,6 +70,12 @@ public class BoardDisplay extends JPanel {
 			Rectangle2D.Double thisBGCell = new Rectangle2D.Double(move.getCol()*xSpacing,move.getRow()*ySpacing, xSpacing, ySpacing);
 			myG.fill(thisBGCell);
 		}
+		
+//		if(makeAIMove){
+//			this.board = this.board.getNextMove(false, 5);
+//			makeAIMove = false;
+//		}
+		
 	}
 
 	public Board getBoard(){

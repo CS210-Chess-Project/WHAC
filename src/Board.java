@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Class to represent the game board or various lookahead board states.
@@ -7,8 +6,6 @@ import java.util.Arrays;
  *
  */
 public class Board{
-	//test:
-	private static Piece focusPiece;
 
 	public static final boolean BLACK =false;
 	public static final boolean WHITE = true;
@@ -173,30 +170,25 @@ public class Board{
 	// I just kinda threw together framework for how I thought these might work.  If you need to modify them, feel free.
 
 	/**
-	 * Minimax lookahead to decide moves
-	 * 
-	 * @param lookAheadNumber the number of moves to look ahead
-	 * @param alpha the alpha value for alpha-beta pruning
-	 * @param beta the beta value for alpha-beta pruning
-	 * @param board the starting board
-	 * @param maximizing true if maximizing, false if minimizing
-	 * @return the optimal move
+	 * Method that calls minimax on the current board and chooses the best future board state.
+	 * I found that it's a heck of a lot easier to return a Board object than a Move object, and the Board object is just as useful.
+	 * @param forColor the color (white = true, black = false) of the player getting the move
+	 * @param lookAheadNumber the amount to look ahead
+	 * @return the Board object representing the best chosen move
 	 */
-	//public Move getNextMove(int lookAheadNumber, int alpha, int beta, int board, boolean maximizing){
-	//temporarily void
 	public Board getNextMove(boolean forColor, int lookAheadNumber){
-//		double threshold;
-//		double alpha;
-//		double beta;
-//		if(lookAheadNumber == 0){
-//
-//		}
-//		else
-//		{
-//			ArrayList<Board> next = nextTurnStates();
-//			for(int i = 0; i < next.size(); i++)
-//				next.get(i).getNextMove(lookAheadNumber-1);
-//		}
+		//		double threshold;
+		//		double alpha;
+		//		double beta;
+		//		if(lookAheadNumber == 0){
+		//
+		//		}
+		//		else
+		//		{
+		//			ArrayList<Board> next = nextTurnStates();
+		//			for(int i = 0; i < next.size(); i++)
+		//				next.get(i).getNextMove(lookAheadNumber-1);
+		//		}
 		//This is the basis for the recursion. Beginning with the current board, it will look ahead at all the boards inside each
 		//board arraylist until the best move is found. There's still a lot of work to do, but this is a good starting point.
 		//I feel bad about using a for-loop in a recursion, but I couldn't think of a different way to look inside each board in the array.
@@ -204,21 +196,34 @@ public class Board{
 		//The future idea is to take the board that scores the "best" value and determine what inital move needs to make that happen, and
 		//then constructing a Move object with the proper variables. - Mark
 
-		//TODO: This is where most of the work will be done.  We will do a minimax search for the best moves, looking ahead the specified number of turns
-		//A Move object that represents our best move will be returned
-		//return null;
-		
+
+		//What I have here reads kind of strangely:
+		//it uses the minimax method to get back the index of the best choice from the list of next board states.
+
 		ArrayList<Board> potentialMoves = this.nextTurnStates(forColor);
-		return potentialMoves.get(this.minimax(forColor, true, lookAheadNumber, Integer.MIN_VALUE, Integer.MAX_VALUE)[1]);
+		//call minimax, maximizing the score of the chosen color
+		int indexOfBestMove = this.minimax(forColor, true, lookAheadNumber, Integer.MIN_VALUE, Integer.MAX_VALUE)[1];
+		if (indexOfBestMove >= 0){
+			return potentialMoves.get(indexOfBestMove); 
+		}
+		else{
+			//no moves were available
+			//return null;
+			return this;
+		}
+
 	}
 
 	/**
-	 * Utility method to help with the minimax search.  Should return the index of the best child move
+	 * Utility method to help with the minimax search. 
+	 * The return is sorta convoluted.  It returns an integer array whose 0th element is the best score found, and whose 1st element is the index 
+	 * of the chosen move from nextMoveStates().
+	 *  
 	 * @param maximizing true if the caller is maximizing.  False if the caller is minimizig
 	 * @param lookahead how many moves to look ahead
 	 * @param alpha the current alpha value
 	 * @param beta the current beta value
-	 * @return the score of the best move
+	 * @return an integer array.  The first value is the best score.  The second value is the index of the chosen move
 	 */
 	private int[] minimax(boolean alignment, boolean maximizing, int lookahead, int alpha, int beta){
 		//pull down alpha-beta values from parent:
@@ -239,7 +244,9 @@ public class Board{
 				//go through the moves, pruning if possible:
 				for (int i = 0; i < potentialMoves.size(); i++){
 					if (thisNodesAlpha > thisNodesBeta){ //pruning condition
-						break; //stop
+						//I kept this print statement for now so that we have an indicator that its working
+						System.out.println("pruning");
+						break;//prune the rest of the children (don't evaluate them)
 					}
 					else{
 						//if we aren't pruning, then we check for value to pull up
@@ -257,7 +264,9 @@ public class Board{
 				//go through moves, pruning if possible:
 				for (int i = 0; i < potentialMoves.size(); i++){
 					if (thisNodesAlpha > thisNodesBeta){ //pruning condition
-						break; //stop
+						//I kept this print statement for now so that we have an indicator that its working
+						System.out.println("pruning");
+						break; //prune the rest of the children
 					}
 					else{
 						int score = potentialMoves.get(i).minimax(alignment, !maximizing, lookahead-1, thisNodesAlpha, thisNodesBeta)[0];
@@ -270,7 +279,7 @@ public class Board{
 				}
 			}
 		}
-		
+
 		return new int[]{currentValue, indexToReturn};
 	}
 
@@ -326,6 +335,7 @@ public class Board{
 		return futureStates;
 	}
 
+	//then if our AI was black, we would call as a minimizer.  if our AI was white, we'd call as a maximizer
 	/**
 	 * Evalutes the board object and returns a heuristic score.  A higher score is better for the evaluting player (in this case, our AI)
 	 * @param playerColor The player from whose perspective we score.
@@ -333,9 +343,8 @@ public class Board{
 	 */
 	public int evaluateSelf(boolean playerColor){
 		//TODO: modify this to include number of moves in the score
-		double pieceMoves = 0;
 		double boardScore = 0;
-		//these should depend on who controls the piece.  It's bad if our piece is in the middle, but good if our opponent's is.  So I moved these to the individual classes
+		// these should depend on who controls the piece.  It's bad if our piece is in the middle, but good if our opponent's is.  So I moved these to the individual classes
 		// I also combined the scoring for a piece into one method, so we can just sum up the scores of all the pieces
 		// This now gives a better indication of a good/bad board.  A completely neutral board will have a score of 0 (for example the starting board).
 		// The score will change based on how we move.  For example, moving our piece to the center of the board will cause the score to fall below 0
@@ -377,27 +386,16 @@ public class Board{
 	}
 
 	//test method
-	/*public static void main(String[] args){
+	public static void main(String[] args){
 		Board b = new Board(true);
-		
-		b.makeMove(b.getPieceAt(3, 0), 2, 0);
-		b = b.getNextMove(Board.BLACK, 8);
 		System.out.println(b.toString());
-		//System.out.println(b.getNextMove(Board.BLACK, 3).toString());
-	}*/
-//		Board board = new Board(true);
-//		focusPiece = board.getPieceAt(3, 2);
-//		board.makeMove(board.getPieceAt(3,2), 2, 2);
-//		board.nextTurnStates(board.BLACK);
-
-
-		//		System.out.println(board.evaluateSelf(Board.WHITE));
-		//		board.makeMove(board.getPieceAt(3,2), 1, 2);
-		//		System.out.println(board.toString());
-		//		System.out.println(board.evaluateSelf(Board.WHITE));
-		//		board.makeMove(board.getPieceAt(4,2),1,2);
-		//		System.out.println(board.evaluateSelf(Board.WHITE));
-	
-
-
+		System.out.println("White score: " + b.evaluateSelf(Board.WHITE));
+		System.out.println("Black score: " + b.evaluateSelf(Board.BLACK));
+		//make move bad for white:
+		//b.makeMove(b.getPieceAt(3, 2),2,2);
+		b.makeMove(b.getPieceAt(4, 3),2,2);
+		System.out.println("White score: " + b.evaluateSelf(Board.WHITE));
+		System.out.println("Black score: " + b.evaluateSelf(Board.BLACK));
+		
+	}
 }
