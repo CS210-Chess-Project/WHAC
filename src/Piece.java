@@ -88,7 +88,11 @@ public abstract class Piece {
     	if (this.alignment != playerColor){
     		locationScore = -locationScore;
     	}
-    	
+    	String color = "Black";
+    	if(this.alignment){
+    		color = "White";
+    	}
+    	//System.out.println("Location score for " + color + " " + this.getClass() + " : " + locationScore);
     	return locationScore;
 	}
 

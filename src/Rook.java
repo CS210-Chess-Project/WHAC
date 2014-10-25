@@ -128,7 +128,7 @@ public class Rook extends Piece {
 	}
 	@Override
 	public int getHeuristicScore(boolean playerAlignment){
-		int pieceScore = -2;
+		int pieceScore = -4;
 		if (this.alignment != playerAlignment){
 			pieceScore = -pieceScore;
 		}

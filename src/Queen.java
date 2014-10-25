@@ -208,7 +208,7 @@ public class Queen extends Piece {
 	}
 	@Override
 	public int getHeuristicScore(boolean playerAlignment){
-		int pieceScore = -4;
+		int pieceScore = -8;
 		if (this.alignment != playerAlignment){
 			pieceScore = -pieceScore;
 		}

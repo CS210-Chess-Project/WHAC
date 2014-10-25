@@ -43,7 +43,7 @@ public class ChessApp {
 
 	Piece selectedPiece;
 
-	int maxLookAhead = 4;
+	static int maxLookAhead = 4;
 
 	//variables for global graphical components
 	private static BoardDisplay graphicalBoard;
@@ -60,11 +60,16 @@ public class ChessApp {
 		Timer AITimer = new Timer(400,new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
 				if(!playersMove){
-					graphicalBoard.setBoard(graphicalBoard.getBoard().getNextMove(!playerColor, 4));
+					graphicalBoard.setBoard(graphicalBoard.getBoard().getNextMove(!playerColor, maxLookAhead));
 					playersMove = true;
 					frame.repaint();
-					System.out.println(graphicalBoard.getBoard().evaluateSelf(!playerColor));
+					System.out.println("Score after CPU move: " + graphicalBoard.getBoard().evaluateSelf(!playerColor));
+					//check for game over states:
+					if (graphicalBoard.getBoard().isGameOver(playerColor)){
+						System.out.println("GAME OVER!");
+					}
 				}
 			}			
 		});
@@ -345,13 +350,16 @@ public class ChessApp {
 									}
 								}
 							}
-						}
+						}						
 						if (moveLegal){						
 							bd.getBoard().makeMove(new Move(selectedPiece, releasedRow, releasedCol, bd.getBoard()));
 							bd.repaint();
 							playersMove = !playersMove;
 							//TODO: notify user that AI is making move
-
+							System.out.println("Score after player's turn: " + bd.getBoard().evaluateSelf(!playerColor));
+							if (graphicalBoard.getBoard().isGameOver(!playerColor)){
+								System.out.println("GAME OVER!");
+							}
 
 						}
 						else{

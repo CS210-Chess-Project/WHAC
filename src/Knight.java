@@ -138,7 +138,7 @@ public class Knight extends Piece {
 	}
 	@Override
 	public int getHeuristicScore(boolean playerAlignment){
-		int pieceScore = 1;
+		int pieceScore = -6;
     	if (this.alignment != playerAlignment){
     		pieceScore = -pieceScore;
     	}
