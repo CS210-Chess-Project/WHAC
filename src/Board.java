@@ -11,7 +11,7 @@ public class Board{
 	public static final boolean WHITE = true;
 
 	public Piece[][] boardArray;
-	private double score;  // the minimax score for this board.  Computed and returned by evaluateSelf()
+	private int score;  // the minimax score for this board.  Computed and returned by evaluateSelf()
 
 	public Board(){
 		this.boardArray = new Piece[5][5];
@@ -101,15 +101,29 @@ public class Board{
 
 	}
 
-	
+
 	public boolean isStalemate(){
 		return isStalemateForColor(Board.WHITE) || isStalemateForColor(Board.BLACK);
 	}
-	
+
 	public boolean isStalemateForColor(boolean color){
-		//TODO: check for stalemate conditions
-		if(this.nextTurnStates(color).size()==0){ return true;}
-		else return false;
+		int pieceCount = 0;
+		if(color==Board.WHITE){
+			pieceCount = whiteCount();
+		}
+		else{
+			pieceCount = blackCount();
+		}
+		if (pieceCount == 0){ //then it's not a stalemate, it's a win!
+			return false;
+		}
+		else{ //else check stalemate conditions 
+			 //if color has no moves:
+			if(this.nextTurnStates(color).size()==0){ 
+				return true;
+			}
+			else return false;
+		}
 	}
 
 	public boolean isGameOver(boolean whosTurn){
@@ -121,7 +135,7 @@ public class Board{
 		}
 		return false;
 	}
-	
+
 	public boolean determineWinningColor(){
 		boolean winner = false;
 		if (this.isStalemate()){
@@ -201,7 +215,6 @@ public class Board{
 
 
 	//  ---------------------------MINIMAX search related methods ----------------------------------
-	// I just kinda threw together framework for how I thought these might work.  If you need to modify them, feel free.
 
 	/**
 	 * Method that calls minimax on the current board and chooses the best future board state.
@@ -211,25 +224,6 @@ public class Board{
 	 * @return the Board object representing the best chosen move
 	 */
 	public Board getNextMove(boolean forColor, int lookAheadNumber){
-		//		double threshold;
-		//		double alpha;
-		//		double beta;
-		//		if(lookAheadNumber == 0){
-		//
-		//		}
-		//		else
-		//		{
-		//			ArrayList<Board> next = nextTurnStates();
-		//			for(int i = 0; i < next.size(); i++)
-		//				next.get(i).getNextMove(lookAheadNumber-1);
-		//		}
-		//This is the basis for the recursion. Beginning with the current board, it will look ahead at all the boards inside each
-		//board arraylist until the best move is found. There's still a lot of work to do, but this is a good starting point.
-		//I feel bad about using a for-loop in a recursion, but I couldn't think of a different way to look inside each board in the array.
-		//Once I start assigning alpha and beta values, I'll add code to prune (breaking out a for loop early, breaking the recursion, etc.).
-		//The future idea is to take the board that scores the "best" value and determine what inital move needs to make that happen, and
-		//then constructing a Move object with the proper variables. - Mark
-
 
 		//What I have here reads kind of strangely:
 		//it uses the minimax method to get back the index of the best choice from the list of next board states.
@@ -271,19 +265,30 @@ public class Board{
 		int thisNodesBeta = beta;
 		int currentValue; // the currentValue of the node - will be initialized momentarily based on whether we are maximizing or minimizing
 		int indexToReturn = -1;
+		
+		int nextLookahead = lookahead-1; //this will change if we need to lookahead "faster" (fewer moves)
 
 		//generate list of potential moves:
 		ArrayList<Board> potentialMoves = this.nextTurnStates(alignment);
+		//DEBUG:
 		if(lookahead == 4){
 			System.out.println("Options: " + potentialMoves.size());
 		}
+		//reduce lookahead to satisfy time reqs if needed:
+		if(potentialMoves.size()>6){
+			nextLookahead = lookahead - 2; //don't lookahead as far
+			if (nextLookahead < 0){
+				nextLookahead = 0; //guard against negative lookahead
+			}
+		}
+		
 		//if we are at a leaf, just return the current board's score
 		if (potentialMoves.size() == 0 || lookahead == 0){ //two stopping conditions
 			if(potentialMoves.size()==0){
 			}
 			return new int[]{this.evaluateSelf(alignment), indexToReturn};			
 		}
-		else{
+		else{ //do minimax
 			if(maximizing){
 				currentValue = Integer.MIN_VALUE;
 				//go through the moves, pruning if possible:
@@ -292,8 +297,19 @@ public class Board{
 						break;//prune the rest of the children (don't evaluate them)
 					}
 					else{
-						//if we aren't pruning, then we check for value to pull up
-						int score = potentialMoves.get(i).minimax(alignment, !maximizing, lookahead-1, thisNodesAlpha, thisNodesBeta)[0];
+						int score;
+						Board potentialMove = potentialMoves.get(i);
+						if (potentialMove.isGameOver(alignment)){ //if it's a game over, score takes on a max or min val
+							if (potentialMove.determineWinningColor()==alignment){
+								score = Integer.MAX_VALUE;
+							}
+							else score= Integer.MIN_VALUE;
+						}
+						else{ //otherwise we do a min search (other players turn)
+							score = potentialMoves.get(i).minimax(alignment, false, nextLookahead, thisNodesAlpha, thisNodesBeta)[0];
+						}
+						//if we aren't pruning, then we check for value to pull up						
+						
 						if (score >= currentValue){ //pull up condition
 							currentValue = score;
 							thisNodesAlpha = score;
@@ -307,12 +323,20 @@ public class Board{
 				//go through moves, pruning if possible:
 				for (int i = 0; i < potentialMoves.size(); i++){
 					if (thisNodesAlpha > thisNodesBeta){ //pruning condition
-						//I kept this print statement for now so that we have an indicator that its working
-						//System.out.println("pruning");
 						break; //prune the rest of the children
 					}
 					else{
-						int score = potentialMoves.get(i).minimax(alignment, !maximizing, lookahead-1, thisNodesAlpha, thisNodesBeta)[0];
+						int score;
+						Board potentialMove = potentialMoves.get(i);
+						if (potentialMove.isGameOver(!alignment)){ //if it's a game over, score takes on a max or min val
+							if (potentialMove.determineWinningColor()==!alignment){
+								score = Integer.MIN_VALUE;
+							}
+							else score= Integer.MAX_VALUE;
+						}
+						else{ //otherwise we do a min search (other players turn)
+							score = potentialMoves.get(i).minimax(alignment, false, nextLookahead, thisNodesAlpha, thisNodesBeta)[0];
+						}
 						if (score <= currentValue){ //pull up condition
 							currentValue = score;
 							thisNodesBeta = score;
@@ -392,20 +416,26 @@ public class Board{
 				return Integer.MIN_VALUE;
 			}
 		}
-		
+
 		//TODO: modify this to include number of moves in the score
-		double boardScore = 0;
-		// these should depend on who controls the piece.  It's bad if our piece is in the middle, but good if our opponent's is.  So I moved these to the individual classes
-		// I also combined the scoring for a piece into one method, so we can just sum up the scores of all the pieces
-		// This now gives a better indication of a good/bad board.  A completely neutral board will have a score of 0 (for example the starting board).
-		// The score will change based on how we move.  For example, moving our piece to the center of the board will cause the score to fall below 0
+		//sum up individual piece scores
+		int boardScore = 0;
 		for(int row = 0; row < 5; row++){
 			for(int col = 0; col < 5; col++){
 				boardScore += boardArray[row][col].getHeuristicScore(playerColor);
 			}
 		}
+		//factor in how many pieces each player has
+//		if (playerColor== Board.WHITE){
+//			boardScore -= this.whiteCount();
+//			boardScore += this.blackCount();
+//		}
+//		else{
+//			boardScore += this.whiteCount();
+//			boardScore -= this.blackCount();
+//		}
 		this.score = boardScore;
-		return (int) this.score;
+		return this.score;
 	}
 
 	// ------------------------- End Minimax related methods --------------------------------
@@ -476,8 +506,8 @@ public class Board{
 		System.out.println("White score: " + b.evaluateSelf(Board.WHITE));
 		System.out.println("Black score: " + b.evaluateSelf(Board.BLACK));*/
 		Board b = new Board();
-		
-		
+
+
 		Piece[][] newBoard = new Piece[5][5];
 		for(int row = 0 ; row < 5; row++){
 			for(int col = 0; col< 5; col++){
@@ -492,7 +522,7 @@ public class Board{
 		newBoard[2][2] = new Pawn(new int[]{2,2}, Board.WHITE, b);
 		newBoard[3][0] = new Pawn(new int[]{3,0}, Board.WHITE, b);
 		b.setBoardArray(newBoard);
-		
+
 		System.out.println(b.nextTurnStates(Board.BLACK).size());
 
 	}

@@ -105,13 +105,13 @@ public class Pawn extends Piece {
 				this.image = ImageIO.read(new File("resources" + File.separator + "black-pawn.png"));
 			}
 		} catch (IOException e) {
-			System.out.println("Exception thrown");
+			System.out.println("Unable to find resource Image for Pawn");
 			image = null;
 		}
 	}
 	@Override
 	public int getHeuristicScore(boolean playerAlignment){
-		int pieceScore = 0;
+		int pieceScore = 2;
     	if (this.alignment != playerAlignment){
     		pieceScore = -pieceScore;
     	}

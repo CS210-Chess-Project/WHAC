@@ -133,7 +133,7 @@ public class Bishop extends Piece {
 
 	@Override
 	public int getHeuristicScore(boolean playerAlignment){   
-		int pieceScore = -4;
+		int pieceScore = -3;
 		if (this.alignment != playerAlignment){
 			pieceScore = -pieceScore;
 		}
