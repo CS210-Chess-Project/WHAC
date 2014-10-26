@@ -61,6 +61,7 @@ public class ChessApp {
 	private JPanel infoPane;
 	private JPanel controlPane;
 	private JButton undoMoveBtn;
+	private JButton newGameBtn;
 	
 	static Timer AITimer;
 	
@@ -107,15 +108,16 @@ public class ChessApp {
 	 * Create the application.
 	 */
 	public ChessApp() {
-		initialize();
-		choosePlayerCount();
+		initialize(true);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
-		frame = new JFrame();
+	private void initialize(boolean newFrame) {
+		if(newFrame){
+			frame = new JFrame();
+		}
 		frame.setBounds(0, 0, 1000, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
@@ -141,6 +143,7 @@ public class ChessApp {
 		controlPane.setLayout(null);
 		controlPane.setBorder(BorderFactory.createTitledBorder(panelBorder, "Controls"));
 		
+		choosePlayerCount();
 	}
 
 	private void choosePlayerCount(){		
@@ -413,6 +416,15 @@ public class ChessApp {
 	}
 	
 	private void setupControlPane(){
+		//Add new game button:
+		newGameBtn = new JButton("New Game");
+		controlPane.add(newGameBtn);
+		newGameBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				newGame();
+			}
+		});
+		newGameBtn.setBounds(controlPane.getWidth()/10, 40, controlPane.getWidth()*4/5, 80);
 		//Add undo move button:
 		undoMoveBtn = new JButton("Undo Last Move");
 		controlPane.add(undoMoveBtn);
@@ -421,8 +433,16 @@ public class ChessApp {
 				undoLatestMove();
 			}
 		});
-		undoMoveBtn.setBounds(controlPane.getWidth()/10, controlPane.getHeight()/2, controlPane.getWidth()*4/5, 80);
+		undoMoveBtn.setBounds(controlPane.getWidth()/10, 130, controlPane.getWidth()*4/5, 80);
 		undoMoveBtn.setEnabled(false); //disable button until move is made
+	}
+	
+	private void newGame(){
+		AITimer.stop();
+		
+		//frame.dispose();
+		frame.getContentPane().removeAll();
+		initialize(false);
 	}
 	
 	//undoes the latest player-made move
