@@ -1,3 +1,4 @@
+import java.awt.Cursor;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -9,6 +10,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
 /**
@@ -62,10 +64,12 @@ public class ChessApp {
 			public void actionPerformed(ActionEvent arg0) {
 				
 				if(!playersMove){
+					graphicalBoard.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					graphicalBoard.setBoard(graphicalBoard.getBoard().getNextMove(!playerColor, maxLookAhead));
 					playersMove = true;
 					frame.repaint();
 					System.out.println("Score after CPU move: " + graphicalBoard.getBoard().evaluateSelf(!playerColor));
+					graphicalBoard.setCursor(Cursor.getDefaultCursor());
 					//check for game over states:
 					if (graphicalBoard.getBoard().isGameOver(playerColor)){
 						System.out.println("GAME OVER!");
@@ -201,11 +205,10 @@ public class ChessApp {
 		clearContentPane();
 
 		//add label
-		JLabel title = new JLabel();
-		frame.getContentPane().add(title);
+		JLabel title = new JLabel("Who goes first?", SwingConstants.CENTER);
+		frameContent.add(title);
 		title.setFont(new Font("Arial Black", Font.PLAIN, 24));
-		title.setText("Who goes first?");
-		title.setBounds(frame.getWidth()/5, 35, frame.getWidth()*3/5, frame.getHeight()/12);
+		title.setBounds(0, 35, frameContent.getWidth(), frameContent.getHeight()/12);
 
 		//replace buttons
 		JButton playerButton = new JButton();
@@ -239,11 +242,10 @@ public class ChessApp {
 		clearContentPane();
 
 		//add label
-		JLabel title = new JLabel();
-		frame.getContentPane().add(title);
+		JLabel title = new JLabel("Choose the player's color:", SwingConstants.CENTER);
+		frameContent.add(title);
 		title.setFont(new Font("Arial Black", Font.PLAIN, 24));
-		title.setText("Choose the player's color:");
-		title.setBounds(frame.getWidth()/5, 35, frame.getWidth()*3/5, frame.getHeight()/12);
+		title.setBounds(0, 35, frameContent.getWidth(), frame.getHeight()/12);
 
 		//replace buttons
 		JButton whiteButton = new JButton();

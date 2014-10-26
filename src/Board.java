@@ -275,7 +275,7 @@ public class Board{
 			System.out.println("Options: " + potentialMoves.size());
 		}
 		//reduce lookahead to satisfy time reqs if needed:
-		if(potentialMoves.size()>6){
+		if(potentialMoves.size()>7){
 			nextLookahead = lookahead - 2; //don't lookahead as far
 			if (nextLookahead < 0){
 				nextLookahead = 0; //guard against negative lookahead
