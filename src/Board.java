@@ -101,11 +101,6 @@ public class Board{
 
 	}
 
-
-	public boolean isStalemate(){
-		return isStalemateForColor(Board.WHITE) || isStalemateForColor(Board.BLACK);
-	}
-
 	public boolean isStalemateForColor(boolean color){
 		int pieceCount = 0;
 		if(color==Board.WHITE){
@@ -118,7 +113,7 @@ public class Board{
 			return false;
 		}
 		else{ //else check stalemate conditions 
-			 //if color has no moves:
+			//if color has no moves:
 			if(this.nextTurnStates(color).size()==0){ 
 				return true;
 			}
@@ -139,7 +134,7 @@ public class Board{
 	public boolean determineWinningColor(){
 		int whiteCount = this.whiteCount();
 		int blackCount = this.blackCount();
-		System.out.println("Determining winning color: \nWhite count: "+ whiteCount + "\nBlack Count: " + blackCount);
+		//System.out.println("Determining winning color: \nWhite count: "+ whiteCount + "\nBlack Count: " + blackCount);
 		return this.whiteCount() < this.blackCount(); //returns true (WHITE) if white count is less than black count
 	}
 
@@ -254,26 +249,24 @@ public class Board{
 		int thisNodesBeta = beta;
 		int currentValue; // the currentValue of the node - will be initialized momentarily based on whether we are maximizing or minimizing
 		int indexToReturn = -1;
-		
+
 		int nextLookahead = lookahead-1; //this will change if we need to lookahead "faster" (fewer moves)
 
 		//generate list of potential moves:
 		ArrayList<Board> potentialMoves = this.nextTurnStates(alignment);
 		//DEBUG:
-		if(lookahead == 4){
-			System.out.println("Options: " + potentialMoves.size());
+		if(lookahead == 5){
+			//System.out.println("Options: " + potentialMoves.size());
 		}
 		//reduce lookahead to satisfy time reqs if needed:
-		if(potentialMoves.size()>7){
+		if(potentialMoves.size()>7  && lookahead > 3){
 			nextLookahead = lookahead - 2; //don't lookahead as far
-			if (nextLookahead < 0){
-				nextLookahead = 0; //guard against negative lookahead
-			}
 		}
-		
+
 		//if we are at a leaf, just return the current board's score
 		if (potentialMoves.size() == 0 || lookahead == 0){ //two stopping conditions
 			if(potentialMoves.size()==0){
+				
 			}
 			return new int[]{this.evaluateSelf(alignment), indexToReturn};			
 		}
@@ -282,13 +275,14 @@ public class Board{
 				currentValue = Integer.MIN_VALUE;
 				//go through the moves, pruning if possible:
 				for (int i = 0; i < potentialMoves.size(); i++){
-					if (thisNodesAlpha > thisNodesBeta){ //pruning condition
+					if (false){//thisNodesAlpha > thisNodesBeta){ //pruning condition
 						break;//prune the rest of the children (don't evaluate them)
 					}
 					else{
 						int score;
 						Board potentialMove = potentialMoves.get(i);
 						if (potentialMove.isGameOver(alignment)){ //if it's a game over, score takes on a max or min val
+							System.out.println("###############\n#################\nEnd of Game detected");
 							if (potentialMove.determineWinningColor()==alignment){
 								score = Integer.MAX_VALUE;
 							}
@@ -298,7 +292,7 @@ public class Board{
 							score = potentialMoves.get(i).minimax(alignment, false, nextLookahead, thisNodesAlpha, thisNodesBeta)[0];
 						}
 						//if we aren't pruning, then we check for value to pull up						
-						
+
 						if (score >= currentValue){ //pull up condition
 							currentValue = score;
 							thisNodesAlpha = score;
@@ -311,7 +305,7 @@ public class Board{
 				currentValue = Integer.MAX_VALUE;
 				//go through moves, pruning if possible:
 				for (int i = 0; i < potentialMoves.size(); i++){
-					if (thisNodesAlpha > thisNodesBeta){ //pruning condition
+					if (false){//thisNodesAlpha > thisNodesBeta){ //pruning condition
 						break; //prune the rest of the children
 					}
 					else{
@@ -415,14 +409,14 @@ public class Board{
 			}
 		}
 		//factor in how many pieces each player has
-//		if (playerColor== Board.WHITE){
-//			boardScore -= this.whiteCount();
-//			boardScore += this.blackCount();
-//		}
-//		else{
-//			boardScore += this.whiteCount();
-//			boardScore -= this.blackCount();
-//		}
+		//		if (playerColor== Board.WHITE){
+		//			boardScore -= this.whiteCount();
+		//			boardScore += this.blackCount();
+		//		}
+		//		else{
+		//			boardScore += this.whiteCount();
+		//			boardScore -= this.blackCount();
+		//		}
 		this.score = boardScore;
 		return this.score;
 	}
@@ -484,35 +478,26 @@ public class Board{
 	}
 
 	//test method
-	public static void main(String[] args){
-		/*Board b = new Board(true);
-		System.out.println(b.toString());
-		System.out.println("White score: " + b.evaluateSelf(Board.WHITE));
-		System.out.println("Black score: " + b.evaluateSelf(Board.BLACK));
-		//make move bad for white:
-		//b.makeMove(b.getPieceAt(3, 2),2,2);
-		b.makeMove(b.getPieceAt(4, 3),2,2);
-		System.out.println("White score: " + b.evaluateSelf(Board.WHITE));
-		System.out.println("Black score: " + b.evaluateSelf(Board.BLACK));*/
-		Board b = new Board();
-
-
-		Piece[][] newBoard = new Piece[5][5];
-		for(int row = 0 ; row < 5; row++){
-			for(int col = 0; col< 5; col++){
-				newBoard[row][col] = new EmptySpace(new int[]{row, col});
-			}
-		}
-		b.setBoardArray(newBoard);
-		newBoard[0][0] = new King(new int[]{0,0,}, Board.BLACK, b);
-		newBoard[1][0] = new Pawn(new int[]{1,0}, Board.BLACK, b);
-		newBoard[1][2] = new Pawn(new int[]{1,2}, Board.BLACK, b);
-		newBoard[3][3] = new Pawn(new int[]{1,0}, Board.BLACK, b);
-		newBoard[2][2] = new Pawn(new int[]{2,2}, Board.WHITE, b);
-		newBoard[3][0] = new Pawn(new int[]{3,0}, Board.WHITE, b);
-		b.setBoardArray(newBoard);
-
-		System.out.println(b.nextTurnStates(Board.BLACK).size());
-
-	}
+//	public static void main(String[] args){
+//		Board b = new Board();
+//
+//
+//		Piece[][] newBoard = new Piece[5][5];
+//		for(int row = 0 ; row < 5; row++){
+//			for(int col = 0; col< 5; col++){
+//				newBoard[row][col] = new EmptySpace(new int[]{row, col});
+//			}
+//		}
+//		b.setBoardArray(newBoard);
+//		newBoard[0][0] = new King(new int[]{0,0,}, Board.BLACK, b);
+//		newBoard[1][0] = new Pawn(new int[]{1,0}, Board.BLACK, b);
+//		newBoard[1][2] = new Pawn(new int[]{1,2}, Board.BLACK, b);
+//		newBoard[3][3] = new Pawn(new int[]{1,0}, Board.BLACK, b);
+//		newBoard[2][2] = new Pawn(new int[]{2,2}, Board.WHITE, b);
+//		newBoard[3][0] = new Pawn(new int[]{3,0}, Board.WHITE, b);
+//		b.setBoardArray(newBoard);
+//
+//		System.out.println(b.nextTurnStates(Board.BLACK).size());
+//
+//	}
 }
