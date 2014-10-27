@@ -3,13 +3,20 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
@@ -34,9 +41,11 @@ public class ChessApp {
 	private static boolean playerColor = WHITE;
 	private boolean playerGoFirst = true;
 	private static boolean gameOver = false;
+	private static boolean winningColor;
 	private static boolean AIinAction = false;
-	
+
 	private Board boardBeforePlayerMove;  //stores the board before player's latest move, in case we need to undo
+	private static Board boardBeforeAIMove;
 
 	//variables related to click events:
 	private int pressedX;
@@ -57,14 +66,16 @@ public class ChessApp {
 	private static BoardDisplay graphicalBoard;
 
 	private static JFrame frame;
-	private JPanel frameContent;
+	private static JPanel frameContent;
 	private JPanel infoPane;
+	private BoardDisplay overlayPane;
 	private JPanel controlPane;
 	private JButton undoMoveBtn;
 	private JButton newGameBtn;
-	
+	private static JButton boardBeforeAIMoveBtn;
+
 	static Timer AITimer;
-	
+
 
 	/**
 	 * Launch the application.
@@ -75,19 +86,35 @@ public class ChessApp {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if(!playersMove){
+					//save board:
+
+					//pre-move tasks:
+					boardBeforeAIMove = graphicalBoard.getBoard();
 					AIinAction = true;
 					graphicalBoard.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+					//compute and make move::
 					graphicalBoard.setBoard(graphicalBoard.getBoard().getNextMove(!playerColor, maxLookAhead));
-					playersMove = true;
-					frame.repaint();
-					System.out.println("Score after CPU move: " + graphicalBoard.getBoard().evaluateSelf(!playerColor));
+					//do after-move tasks:
+					playersMove = true;										
 					graphicalBoard.setCursor(Cursor.getDefaultCursor());
 					AIinAction = false;
+					boardBeforeAIMoveBtn.setEnabled(true);
+					frame.repaint();
+
+					//DEBUG:
+					System.out.println("Score after CPU move: " + graphicalBoard.getBoard().evaluateSelf(!playerColor));
+
 					//check for game over states:
 					if (graphicalBoard.getBoard().isGameOver(playerColor)){
+						//TODO handle game over
 						System.out.println("GAME OVER!");
 						gameOver = true;
+						
+						winningColor = graphicalBoard.getBoard().determineWinningColor();
+						gameOver();
 					}
+
+
 				}
 			}			
 		});
@@ -121,10 +148,10 @@ public class ChessApp {
 		frame.setBounds(0, 0, 1000, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
-		
+
 		Border panelBorder = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
-		
-		
+
+
 		frameContent = new JPanel();
 		frame.getContentPane().add(frameContent);
 		frameContent.setBounds(10, 10, 700, 640);
@@ -136,13 +163,13 @@ public class ChessApp {
 		infoPane.setBounds(720, 10, 250, 310);
 		infoPane.setLayout(null);
 		infoPane.setBorder(BorderFactory.createTitledBorder(panelBorder, "Info"));
-		
+
 		controlPane = new JPanel();
 		frame.getContentPane().add(controlPane);
 		controlPane.setBounds(720, 340, 250, 310);
 		controlPane.setLayout(null);
 		controlPane.setBorder(BorderFactory.createTitledBorder(panelBorder, "Controls"));
-		
+
 		choosePlayerCount();
 	}
 
@@ -226,7 +253,7 @@ public class ChessApp {
 		//wire up stuff:
 		wireUpMouseListener(graphicalBoard);
 		setupControlPane();
-		
+
 		//start AI movement:
 		AITimer.start();
 	}
@@ -387,7 +414,7 @@ public class ChessApp {
 						if (moveLegal){		
 							//make deep copy of board so we can revert if we have to:
 							boardBeforePlayerMove = new Board(bd.getBoard().getBoardArray());
-							
+
 							bd.getBoard().makeMove(new Move(selectedPiece, releasedRow, releasedCol, bd.getBoard()));
 							bd.repaint();
 							playersMove = !playersMove;
@@ -399,6 +426,9 @@ public class ChessApp {
 							if (graphicalBoard.getBoard().isGameOver(!playerColor)){
 								System.out.println("GAME OVER!");
 								gameOver= true;
+								
+								winningColor = graphicalBoard.getBoard().determineWinningColor();
+								gameOver();
 							}
 
 						}
@@ -414,20 +444,23 @@ public class ChessApp {
 			}
 		});
 	}
-	
+
 	private void setupControlPane(){
 		//Add new game button:
 		newGameBtn = new JButton("New Game");
 		controlPane.add(newGameBtn);
+		newGameBtn.setFont(new Font("Arial Black", Font.PLAIN, 15));
 		newGameBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				newGame();
 			}
 		});
 		newGameBtn.setBounds(controlPane.getWidth()/10, 40, controlPane.getWidth()*4/5, 80);
+
 		//Add undo move button:
-		undoMoveBtn = new JButton("Undo Last Move");
+		undoMoveBtn = new JButton("<html><center>Undo Last Move</center></html>");
 		controlPane.add(undoMoveBtn);
+		undoMoveBtn.setFont(new Font("Arial Black", Font.PLAIN, 15));
 		undoMoveBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				undoLatestMove();
@@ -435,16 +468,70 @@ public class ChessApp {
 		});
 		undoMoveBtn.setBounds(controlPane.getWidth()/10, 130, controlPane.getWidth()*4/5, 80);
 		undoMoveBtn.setEnabled(false); //disable button until move is made
+
+		//add "board before AI move" button:
+		if(singlePlayerGame){
+			boardBeforeAIMoveBtn = new JButton("<html><center>See Board <br>Before AI Move</center></html>");
+			controlPane.add(boardBeforeAIMoveBtn);
+			boardBeforeAIMoveBtn.setFont(new Font("Arial Black", Font.PLAIN, 15));
+			boardBeforeAIMoveBtn.setAlignmentX((float) 0.5);
+			boardBeforeAIMoveBtn.addMouseListener(new MouseAdapter(){
+				public void mousePressed(MouseEvent e){
+					if (overlayPane == null){
+						overlayPane = new BoardDisplay(frameContent.getWidth(), frameContent.getHeight(), boardBeforeAIMove);
+					}
+					else{
+						overlayPane.setBoard(boardBeforeAIMove);
+					}
+					frame.getContentPane().add(overlayPane);
+					overlayPane.setBounds(frameContent.getBounds());
+					frameContent.setVisible(false);
+					overlayPane.setVisible(true);
+				}
+
+				public void mouseReleased(MouseEvent e){
+					overlayPane.setVisible(false);
+					frameContent.setVisible(true);
+				}
+			});
+			boardBeforeAIMoveBtn.setBounds(controlPane.getWidth()/10, 220, controlPane.getWidth()*4/5, 80);
+			boardBeforeAIMoveBtn.setEnabled(false); //disable button until move is made
+		}
+	}
+
+	//method to handle game over:
+	private static void gameOver(){
+		AITimer.stop();
+		frameContent.removeAll();
+		String color = playerColor ? "White" : "Black";
+		System.out.println("Winning color: " + color);
+		//if(singlePlayerGame){
+			if(winningColor==!playerColor){ //if CPU wins
+				ImageIcon icon = new ImageIcon("resources" + File.separator + "yzma-i-win.gif");
+			    JLabel label = new JLabel(icon);
+			    frameContent.add(label);
+			    label.setBounds(10, 10, frameContent.getWidth(), frameContent.getHeight());
+			}
+			else{
+				ImageIcon icon = new ImageIcon("resources" + File.separator + "yzma-lost.gif");
+			    JLabel label = new JLabel(icon);
+			    frameContent.add(label);
+			    label.setBounds(10, 10, frameContent.getWidth(), frameContent.getHeight());	
+			    
+			}
+		//}
+		
 	}
 	
+	//methods for control panel functionality:	
 	private void newGame(){
 		AITimer.stop();
-		
+
 		//frame.dispose();
 		frame.getContentPane().removeAll();
 		initialize(false);
 	}
-	
+
 	//undoes the latest player-made move
 	private void undoLatestMove(){
 		if(singlePlayerGame){
@@ -455,6 +542,7 @@ public class ChessApp {
 				graphicalBoard.setBoard(boardBeforePlayerMove);
 				graphicalBoard.repaint();
 				playersMove = true;
+				boardBeforeAIMoveBtn.setEnabled(false); //disable undo AI makes a move again
 			}
 		}
 		else{
@@ -462,10 +550,11 @@ public class ChessApp {
 			graphicalBoard.setBoard(boardBeforePlayerMove);
 			graphicalBoard.repaint();
 		}
-		
+
 		undoMoveBtn.setEnabled(false); //disable button until another move is made
 	}
 
+	//utilities:
 	private Piece getPieceClicked(int clickX, int clickY, Board bd){
 		int xClicked = clickX;
 		int yClicked = clickY;

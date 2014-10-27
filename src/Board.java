@@ -137,21 +137,10 @@ public class Board{
 	}
 
 	public boolean determineWinningColor(){
-		boolean winner = false;
-		if (this.isStalemate()){
-			winner = Board.BLACK;
-			if (this.whiteCount() < this.blackCount()){ winner = Board.WHITE;}
-			return winner;
-		}
-		else if(this.whiteCount() == 0){
-			return Board.WHITE;
-		}
-		else if(blackCount()==0){
-			return Board.BLACK;
-		}
-		else{
-			return winner;
-		}
+		int whiteCount = this.whiteCount();
+		int blackCount = this.blackCount();
+		System.out.println("Determining winning color: \nWhite count: "+ whiteCount + "\nBlack Count: " + blackCount);
+		return this.whiteCount() < this.blackCount(); //returns true (WHITE) if white count is less than black count
 	}
 
 	//By nature, this isn't a terribly efficient method.  Try not to use it for anything performance-sensitive
@@ -457,7 +446,7 @@ public class Board{
 		int counter = 0;
 		for(int col = 0; col < 5; col++){
 			for (int row = 0; row < 5; row++){
-				if (boardArray[row][col].alignment == Board.BLACK){
+				if (boardArray[row][col].alignment == Board.BLACK && !(boardArray[row][col] instanceof EmptySpace)){
 					counter++;
 				}
 			}
