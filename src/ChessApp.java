@@ -7,16 +7,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import javax.swing.BorderFactory;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
@@ -60,7 +56,7 @@ public class ChessApp {
 
 	Piece selectedPiece;
 
-	static int maxLookAhead = 2;
+	static int maxLookAhead = 4;
 
 	//variables for global graphical components
 	private static BoardDisplay graphicalBoard;
@@ -102,7 +98,7 @@ public class ChessApp {
 					frame.repaint();
 
 					//DEBUG:
-					System.out.println("Score after CPU move: " + graphicalBoard.getBoard().evaluateSelf(!playerColor));
+					//System.out.println("Score after CPU move: " + graphicalBoard.getBoard().evaluateSelf(!playerColor));
 
 					//check for game over states:
 					if (graphicalBoard.getBoard().isGameOver(playerColor)){
@@ -422,7 +418,7 @@ public class ChessApp {
 							undoMoveBtn.setEnabled(true);
 							//TODO: notify user that AI is making move
 							//DEBUG
-							System.out.println("Score after player's turn: " + bd.getBoard().evaluateSelf(!playerColor));
+							//System.out.println("Score after player's turn: " + bd.getBoard().evaluateSelf(!playerColor));
 							if (graphicalBoard.getBoard().isGameOver(!playerColor)){
 								System.out.println("GAME OVER!");
 								gameOver= true;
@@ -541,6 +537,10 @@ public class ChessApp {
 			else{
 				graphicalBoard.setBoard(boardBeforePlayerMove);
 				graphicalBoard.repaint();
+				if(!graphicalBoard.isAncestorOf(frameContent)){ //usually this would only happen if the game ended
+					frameContent.add(graphicalBoard);	
+					AITimer.start();
+				}
 				playersMove = true;
 				boardBeforeAIMoveBtn.setEnabled(false); //disable undo AI makes a move again
 			}

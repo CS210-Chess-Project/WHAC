@@ -252,30 +252,28 @@ public class Board{
 
 		int nextLookahead = lookahead-1; //this will change if we need to lookahead "faster" (fewer moves)
 
-		//generate list of potential moves:
-		ArrayList<Board> potentialMoves = this.nextTurnStates(alignment);
-		//DEBUG:
-		if(lookahead == 5){
-			//System.out.println("Options: " + potentialMoves.size());
-		}
+		
 		//reduce lookahead to satisfy time reqs if needed:
-		if(potentialMoves.size()>7  && lookahead > 3){
-			nextLookahead = lookahead - 2; //don't lookahead as far
-		}
+//		if(potentialMoves.size()>7  && lookahead > 3){
+//			nextLookahead = lookahead - 2; //don't lookahead as far
+//			
+//		}
 
 		//if we are at a leaf, just return the current board's score
-		if (potentialMoves.size() == 0 || lookahead == 0){ //two stopping conditions
-			if(potentialMoves.size()==0){
-				
-			}
+		if (lookahead == 0){ //two stopping conditions
 			return new int[]{this.evaluateSelf(alignment), indexToReturn};			
 		}
 		else{ //do minimax
+			//generate list of potential moves:
+			ArrayList<Board> potentialMoves = this.nextTurnStates(alignment);
+			if(potentialMoves.size()==0){
+				return new int[]{this.evaluateSelf(alignment), indexToReturn};
+			}
 			if(maximizing){
 				currentValue = Integer.MIN_VALUE;
 				//go through the moves, pruning if possible:
 				for (int i = 0; i < potentialMoves.size(); i++){
-					if (false){//thisNodesAlpha > thisNodesBeta){ //pruning condition
+					if (thisNodesAlpha > thisNodesBeta){ //pruning condition
 						break;//prune the rest of the children (don't evaluate them)
 					}
 					else{
@@ -305,7 +303,7 @@ public class Board{
 				currentValue = Integer.MAX_VALUE;
 				//go through moves, pruning if possible:
 				for (int i = 0; i < potentialMoves.size(); i++){
-					if (false){//thisNodesAlpha > thisNodesBeta){ //pruning condition
+					if (thisNodesAlpha > thisNodesBeta){ //pruning condition
 						break; //prune the rest of the children
 					}
 					else{
@@ -317,8 +315,8 @@ public class Board{
 							}
 							else score= Integer.MAX_VALUE;
 						}
-						else{ //otherwise we do a min search (other players turn)
-							score = potentialMoves.get(i).minimax(alignment, false, nextLookahead, thisNodesAlpha, thisNodesBeta)[0];
+						else{ //otherwise we do a max search (other players turn)
+							score = potentialMoves.get(i).minimax(alignment, true, nextLookahead, thisNodesAlpha, thisNodesBeta)[0];
 						}
 						if (score <= currentValue){ //pull up condition
 							currentValue = score;
@@ -478,26 +476,28 @@ public class Board{
 	}
 
 	//test method
-//	public static void main(String[] args){
-//		Board b = new Board();
-//
-//
-//		Piece[][] newBoard = new Piece[5][5];
-//		for(int row = 0 ; row < 5; row++){
-//			for(int col = 0; col< 5; col++){
-//				newBoard[row][col] = new EmptySpace(new int[]{row, col});
-//			}
-//		}
-//		b.setBoardArray(newBoard);
-//		newBoard[0][0] = new King(new int[]{0,0,}, Board.BLACK, b);
+	public static void main(String[] args){
+		Board b = new Board();
+
+
+		Piece[][] newBoard = new Piece[5][5];
+		for(int row = 0 ; row < 5; row++){
+			for(int col = 0; col< 5; col++){
+				newBoard[row][col] = new EmptySpace(new int[]{row, col});
+			}
+		}
+		
+		newBoard[2][2] = new King(new int[]{0,0,}, Board.BLACK, b);
 //		newBoard[1][0] = new Pawn(new int[]{1,0}, Board.BLACK, b);
 //		newBoard[1][2] = new Pawn(new int[]{1,2}, Board.BLACK, b);
 //		newBoard[3][3] = new Pawn(new int[]{1,0}, Board.BLACK, b);
 //		newBoard[2][2] = new Pawn(new int[]{2,2}, Board.WHITE, b);
-//		newBoard[3][0] = new Pawn(new int[]{3,0}, Board.WHITE, b);
+		newBoard[3][0] = new Pawn(new int[]{0,0}, Board.WHITE, b);
 //		b.setBoardArray(newBoard);
-//
-//		System.out.println(b.nextTurnStates(Board.BLACK).size());
-//
-//	}
+		b.setBoardArray(newBoard);
+
+		System.out.println(b.isGameOver(false));
+		System.out.println(b.isGameOver(true));
+
+	}
 }
