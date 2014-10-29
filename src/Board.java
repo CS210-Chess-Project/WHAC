@@ -252,12 +252,12 @@ public class Board{
 
 		int nextLookahead = lookahead-1; //this will change if we need to lookahead "faster" (fewer moves)
 
-		
+		ArrayList<Board> potentialMoves = this.nextTurnStates(alignment);
 		//reduce lookahead to satisfy time reqs if needed:
-//		if(potentialMoves.size()>7  && lookahead > 3){
-//			nextLookahead = lookahead - 2; //don't lookahead as far
-//			
-//		}
+		if(potentialMoves.size()>7  && lookahead > 3){
+			nextLookahead = lookahead - 2; //don't lookahead as far
+			
+		}
 
 		//if we are at a leaf, just return the current board's score
 		if (lookahead == 0){ //two stopping conditions
@@ -265,7 +265,7 @@ public class Board{
 		}
 		else{ //do minimax
 			//generate list of potential moves:
-			ArrayList<Board> potentialMoves = this.nextTurnStates(alignment);
+			
 			if(potentialMoves.size()==0){
 				return new int[]{this.evaluateSelf(alignment), indexToReturn};
 			}
