@@ -280,7 +280,6 @@ public class Board{
 						int score;
 						Board potentialMove = potentialMoves.get(i);
 						if (potentialMove.isGameOver(alignment)){ //if it's a game over, score takes on a max or min val
-							System.out.println("###############\n#################\nEnd of Game detected");
 							if (potentialMove.determineWinningColor()==alignment){
 								score = Integer.MAX_VALUE;
 							}
@@ -406,15 +405,6 @@ public class Board{
 				boardScore += boardArray[row][col].getHeuristicScore(playerColor);
 			}
 		}
-		//factor in how many pieces each player has
-		//		if (playerColor== Board.WHITE){
-		//			boardScore -= this.whiteCount();
-		//			boardScore += this.blackCount();
-		//		}
-		//		else{
-		//			boardScore += this.whiteCount();
-		//			boardScore -= this.blackCount();
-		//		}
 		this.score = boardScore;
 		return this.score;
 	}

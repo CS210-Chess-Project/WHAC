@@ -14,6 +14,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
@@ -30,17 +31,18 @@ public class ChessApp {
 	//arbitrary constants
 	private static final boolean WHITE = true;
 	private static final boolean BLACK = false;
+	
+	//handy device-specific variables
+	private static final double _W = java.awt.Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+	private static final double _H = java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight();
 
 	//variables related to game type/state
 	private static boolean singlePlayerGame;
 	private boolean easyMode;
 	private static boolean playersMove = true; //true = player 1, false = player 2 or computer
 	private static boolean playerColor = WHITE;
-	//private boolean playerGoFirst = true;
-	//private static boolean gameOver = false;
 	private static boolean winningColor;
 
-	//private Board boardBeforePlayerMove;  //stores the board before player's latest move, in case we need to undo
 	Stack<Board> moveHistory = new Stack<Board>();
 	private static Board boardBeforeAIMove;
 
@@ -66,6 +68,15 @@ public class ChessApp {
 	private static JButton undoMoveBtn;
 	private JButton newGameBtn;
 	private static JButton boardBeforeAIMoveBtn;
+	
+	private static JLabel infoLabel;
+	private static String CPUMoveText = "<html>Status: CPU turn.</html>";
+	private static String PlayersMoveText = "<html>Status: Your turn.</html>";
+	private static String player1Text = "<html>Status: Player 1's turn.</html>";
+	private static String player2Text = "<html>Status: Player 2's turn.</html>";
+	private static String gameOverText = "<html>Status: Game Over!</html>";
+	
+	private static JLabel notificationLabel;
 
 	static Timer AITimer;
 
@@ -90,16 +101,11 @@ public class ChessApp {
 					playersMove = true;										
 					graphicalBoard.setCursor(Cursor.getDefaultCursor());
 					boardBeforeAIMoveBtn.setEnabled(true);
+					infoLabel.setText(PlayersMoveText);
 					frame.repaint();
-
-					//DEBUG:
-					//System.out.println("Score after CPU move: " + graphicalBoard.getBoard().evaluateSelf(!playerColor));
 
 					//check for game over states:
 					if (graphicalBoard.getBoard().isGameOver(playerColor)){
-						//TODO handle game over
-						//gameOver = true;
-
 						winningColor = graphicalBoard.getBoard().determineWinningColor();
 						gameOver();
 					}
@@ -243,6 +249,7 @@ public class ChessApp {
 		//wire up stuff:
 		wireUpMouseListener(graphicalBoard);
 		setupControlPane();
+		setupInfoPane();
 
 		//start AI movement:
 		AITimer.start();
@@ -334,6 +341,7 @@ public class ChessApp {
 		//wire stuff up:
 		wireUpMouseListener(graphicalBoard);
 		setupControlPane();
+		setupInfoPane();
 	}
 
 	private void wireUpMouseListener(BoardDisplay bd){
@@ -401,7 +409,7 @@ public class ChessApp {
 								}
 							}
 						}						
-						if (moveLegal){		
+						if (moveLegal){
 							//make deep copy of board so we can revert if we have to:
 							//boardBeforePlayerMove = new Board(bd.getBoard().getBoardArray());
 							moveHistory.push(new Board(bd.getBoard().getBoardArray()));
@@ -410,20 +418,30 @@ public class ChessApp {
 							bd.repaint();
 							playersMove = !playersMove;
 							undoMoveBtn.setEnabled(true);
-							//TODO: notify user that AI is making move
-							//DEBUG
-							//System.out.println("Score after player's turn: " + bd.getBoard().evaluateSelf(!playerColor));
 							if (graphicalBoard.getBoard().isGameOver(!playerColor)){
 								//gameOver= true;
 
 								winningColor = graphicalBoard.getBoard().determineWinningColor();
 								gameOver();
 							}
+							
+							//set status label to appropriate message:
+							if(singlePlayerGame){
+								infoLabel.setText(CPUMoveText);
+							}
+							else if(playersMove){
+								infoLabel.setText(player1Text);
+							}
+							else{
+								infoLabel.setText(player2Text);
+							}		
+							notificationLabel.setText("");
 
 						}
 						else{
-							//TODO: notify the user that this move isn't legal
+							notificationLabel.setText("<html>Illegal move. You have capture moves available.</html>");
 						}
+						
 					}
 
 					//always un-highlight moves
@@ -488,26 +506,99 @@ public class ChessApp {
 		}
 	}
 
+	private void setupInfoPane(){
+		JButton helpBtn = new JButton("Help");
+		infoPane.add(helpBtn);
+		helpBtn.setFont(new Font("Arial Black", Font.PLAIN, 15));
+		helpBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (Math.random()<=0.3){ //30% of the time, just display some silly message
+					JOptionPane.showMessageDialog(frame, "WHAC help services are currently closed.  \nPlease call sometime between the hours of 11:00 and 11:30 Monday through Friday, except not Fridays or Mondays, \nand only on the 3rd Wednesday of every 5th month and Tuesdays that happen to fall on the 13th day of September.  \nFeel Free to try on Thursday though.");
+				}
+				else{
+					JFrame popup = new JFrame();
+					popup.setBounds((int)_W/4, (int)_H/4, (int)_W/2, (int)_H/2);
+					popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+					popup.setVisible(true);
+					JLabel instructionLabel = new JLabel();
+					instructionLabel.setText("<html><div style=\"text-align: center;font-size: 12px;\">The Game of WHAC was invented by an shrimp-loving Indonesian sherpa around 1800 B.C.  It has since gained national appeal, attracting the attention of some of the best players and logisticians in the world, including Vince Gilligan, Gilligan from Gilligan's Island, the Beastie Boys, Nathan Fillion, Tony the Tiger, and the Monty Python Troupe.  The game is often played in a setting of utter tranquility, with Enya music playing in the background accompanied by a live harpist.  <br>The rules are as follows:"
+							+ "<ulstyle=\"text-align: left;font-size: 12px;\">"
+							+ "<li>Masochistic war: the first player to lose all his pieces wins.</li>"
+							+ "<li>Masochistic stalemates: In the event of a stalemate, the player with the fewest pieces wins.</li>"
+							+ "<li>Stalemated Stalemates: If a stalemate is reached and both players have the same number of pieces, the player with the most advanced nuclear weapon wins</li>"
+							+ "<li>Sadistic Movement: If a capture is a available, it must be taken.  If two or more such captures are avaiable, the player is to chose one and give the opponent's piece a quick and brutal death as an example to the others</li>"
+							+ "<li>?????????????????</li>"
+							+ "<li>Philandering, horseplay, fidgeting, tomfoolery, extortion, and money laundering are strictly prohibited.</li>"
+							+ "</ul>"
+							+ "</div></html>");
+					popup.add(instructionLabel);
+				}
+				
+			}
+		});
+		helpBtn.setBounds(infoPane.getWidth()/10, 160, infoPane.getWidth()*4/5, 80);
+		
+		//setup info box:
+		String initialText = "";
+		if(singlePlayerGame && playersMove){
+			 initialText = PlayersMoveText;
+		}
+		else if(singlePlayerGame && !playersMove){
+			initialText = CPUMoveText;
+		}
+		else if(!singlePlayerGame && playersMove){
+			initialText = player1Text;
+		}
+		else{
+			initialText = player2Text;
+		}
+		
+		infoLabel = new JLabel(initialText);
+		infoLabel.setBounds(20, 20, infoPane.getWidth() - 40, infoPane.getHeight()/8);
+		infoLabel.setFont(new Font("Arial Black", Font.PLAIN, 14));
+		infoPane.add(infoLabel);
+		
+		JLabel notificationTitleLabel = new JLabel("Notifications:");
+		notificationTitleLabel.setBounds(20, 15 + infoPane.getHeight()/8, infoPane.getWidth() - 40, 30);
+		notificationTitleLabel.setFont(new Font("Arial Black", Font.PLAIN, 14));
+		infoPane.add(notificationTitleLabel);
+		
+		
+		notificationLabel = new JLabel("");
+		notificationLabel.setBounds(20,  + 45 + infoPane.getHeight()/8, infoPane.getWidth() - 40, infoPane.getHeight()/5);
+		notificationLabel.setFont(new Font("Arial Black", Font.PLAIN, 14));
+		infoPane.add(notificationLabel);
+		
+	}
+
 	//method to handle game over:
 	private static void gameOver(){
 		AITimer.stop();
 		frameContent.removeAll();
-		//TODO: multiplayer game endings (somewhat optional)
+		infoLabel.setText(gameOverText);
 		//if(singlePlayerGame){
 		if(winningColor==!playerColor){ //if CPU wins
+			JLabel winLabel = new JLabel("Computer Wins!", SwingConstants.CENTER);//"<html><div style=\"font-size:40px;\">Computer Wins!</div></html>");
+			winLabel.setFont(new Font("Standard", Font.BOLD, 32));
+			winLabel.setBounds(0,50, frameContent.getWidth(), 150);
+			frameContent.add(winLabel);
 			ImageIcon icon = new ImageIcon("resources" + File.separator + "yzma-i-win.gif");
 			JLabel label = new JLabel(icon);
 			frameContent.add(label);
-			label.setBounds(10, 10, frameContent.getWidth(), frameContent.getHeight());
+			label.setBounds(10, 100, frameContent.getWidth(), frameContent.getHeight()-150);
 		}
 		else{
+			JLabel loseLabel = new JLabel("Player Wins!", SwingConstants.CENTER);//"<html><div style=\"font-size:40px;\">Computer Loses...</div></html>");
+			loseLabel.setFont(new Font("Standard", Font.BOLD, 32));
+			loseLabel.setBounds(0,100, frameContent.getWidth(), 150);
+			frameContent.add(loseLabel);
 			ImageIcon icon = new ImageIcon("resources" + File.separator + "yzma-lost.gif");
 			JLabel label = new JLabel(icon);
 			frameContent.add(label);
-			label.setBounds(10, 10, frameContent.getWidth(), frameContent.getHeight());	
+			label.setBounds(10, 100, frameContent.getWidth(), frameContent.getHeight()-150);	
 
 		}
-		
+
 		undoMoveBtn.setEnabled(false);
 		if(boardBeforeAIMoveBtn!= null){
 			boardBeforeAIMoveBtn.setEnabled(false);
