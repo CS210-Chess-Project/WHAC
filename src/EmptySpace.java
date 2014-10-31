@@ -3,6 +3,7 @@ import java.util.ArrayList;
 
 /**
  * Class to represent an empty space on the board
+ * See superclass for method documentation
  * @author Zach
  *
  */

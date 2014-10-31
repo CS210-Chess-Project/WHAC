@@ -6,6 +6,7 @@ import javax.imageio.ImageIO;
 
 /**
  * Class to represent Bishop
+ * See superclass for method documentation
  * @author Zach
  *
  */
@@ -133,7 +134,7 @@ public class Bishop extends Piece {
 
 	@Override
 	public int getHeuristicScore(boolean playerAlignment){   
-		int pieceScore = -3;
+		int pieceScore = -5;
 		if (this.alignment != playerAlignment){
 			pieceScore = -pieceScore;
 		}

@@ -6,6 +6,7 @@ import javax.imageio.ImageIO;
 
 /**
  * Class to represent a rook
+ * See superclass for method documentation
  * @author Zach
  *
  */
@@ -113,7 +114,6 @@ public class Rook extends Piece {
 
 	@Override
 	protected void loadImage() {
-		// TODO Auto-generated method stub
 		try {
 			if (this.alignment){ //i.e. if white piece then
 				this.image = ImageIO.read(new File("resources" + File.separator + "white-rook.png"));
@@ -128,7 +128,7 @@ public class Rook extends Piece {
 	}
 	@Override
 	public int getHeuristicScore(boolean playerAlignment){
-		int pieceScore = -5;
+		int pieceScore = -7;
 		if (this.alignment != playerAlignment){
 			pieceScore = -pieceScore;
 		}

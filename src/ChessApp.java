@@ -55,7 +55,7 @@ public class ChessApp {
 
 	Piece selectedPiece;
 
-	static int maxLookAhead = 5;
+	static int maxLookAhead = 4;
 
 	//variables for global graphical components
 	private static BoardDisplay graphicalBoard;
@@ -109,8 +109,6 @@ public class ChessApp {
 						winningColor = graphicalBoard.getBoard().determineWinningColor();
 						gameOver();
 					}
-
-
 				}
 			}			
 		});
@@ -169,6 +167,9 @@ public class ChessApp {
 		choosePlayerCount();
 	}
 
+	/**
+	 * Show screen to choose single or multiplayer
+	 */
 	private void choosePlayerCount(){		
 		JButton singlePlayerButton = new JButton();
 		singlePlayerButton.setFont(new Font("Arial Black", Font.PLAIN, 24));
@@ -195,12 +196,11 @@ public class ChessApp {
 		twoPlayerButton.setBounds(frameContent.getWidth()/4, frameContent.getHeight()/2 + frameContent.getHeight()/10, frameContent.getWidth()/2, frameContent.getHeight()/6);
 
 	}
-
+	
+	/**
+	 * Show screen to choose beginner mode or advanced mode
+	 */
 	private void easyOrAdvanced(){
-		//clear the contentPane
-		//		frame.getContentPane().removeAll();
-		//		frame.revalidate();
-		//		frame.repaint();
 		clearContentPane();
 
 		JButton easyButton = new JButton();
@@ -255,6 +255,9 @@ public class ChessApp {
 		AITimer.start();
 	}
 
+	/**
+	 * Show screen to choose who goes first
+	 */
 	private void whoGoesFirst(){
 		clearContentPane();
 
@@ -292,6 +295,9 @@ public class ChessApp {
 		compButton.setBounds(frameContent.getWidth()/4, frameContent.getHeight()/2 + frameContent.getHeight()/10, frameContent.getWidth()/2, frameContent.getHeight()/6);
 	}
 
+	/**
+	 * Show screen to choose what color the player will control
+	 */
 	private void decidePlayerColor(){
 		clearContentPane();
 
@@ -344,6 +350,7 @@ public class ChessApp {
 		setupInfoPane();
 	}
 
+	//helper method to add mouse listener to the board
 	private void wireUpMouseListener(BoardDisplay bd){
 		bd.addMouseListener(new MouseListener(){
 
@@ -452,6 +459,9 @@ public class ChessApp {
 		});
 	}
 
+	/**
+	 * Helper method to populate the control panel
+	 */
 	private void setupControlPane(){
 		//Add new game button:
 		newGameBtn = new JButton("New Game");
@@ -506,6 +516,9 @@ public class ChessApp {
 		}
 	}
 
+	/**
+	 * Helper method to populate the info panel
+	 */
 	private void setupInfoPane(){
 		JButton helpBtn = new JButton("Help");
 		infoPane.add(helpBtn);
@@ -571,7 +584,9 @@ public class ChessApp {
 		
 	}
 
-	//method to handle game over:
+	/**
+	 * method to handle things when the game ends
+	 */
 	private static void gameOver(){
 		AITimer.stop();
 		frameContent.removeAll();
@@ -608,6 +623,9 @@ public class ChessApp {
 	}
 
 	//methods for control panel functionality:	
+	/**
+	 * Starts new game
+	 */
 	private void newGame(){
 		AITimer.stop();
 
@@ -616,7 +634,9 @@ public class ChessApp {
 		initialize(false);
 	}
 
-	//undoes the latest player-made move
+	/**
+	 * Undoes the latest player-made move
+	 */
 	private void undoLatestMove(){
 		if(singlePlayerGame){
 			if(!moveHistory.isEmpty()){

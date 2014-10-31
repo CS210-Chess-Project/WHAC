@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import javax.swing.JPanel;
 
 /**
- * Class to help display our board.  I figured we'll be using Swing/AWT so I had it extend a JPanel to make things easy.
+ * Class to help display the game board.
  * @author Zach
  *
  */
@@ -18,20 +18,25 @@ public class BoardDisplay extends JPanel {
 	private Board board;
 	private ArrayList<Move> highlightedMoves = new ArrayList<Move>();
 
+	/**
+	 * Constructor mostly for test boards
+	 * @param b the board to represent
+	 */
 	public BoardDisplay(Board b){
 		this.board = b;
 	}
 
+	/**
+	 * Constructor that should be used
+	 * @param width the width that the board with occupy
+	 * @param height the height that the board with occupy
+	 * @param b the board to represent
+	 */
 	public BoardDisplay(int width, int height, Board b){
 		super();
 		this.setSize(width, height);
 		this.setPreferredSize(new Dimension(width, height));
 		this.board = b;
-	}
-
-	public void update(Board b){
-		this.board = b;
-		repaint();
 	}
 
 	/**
@@ -71,13 +76,9 @@ public class BoardDisplay extends JPanel {
 			myG.fill(thisBGCell);
 		}
 		
-//		if(makeAIMove){
-//			this.board = this.board.getNextMove(false, 5);
-//			makeAIMove = false;
-//		}
-		
 	}
 
+	//Getters/Setters and Utilities
 	public Board getBoard(){
 		return this.board;
 
@@ -92,7 +93,6 @@ public class BoardDisplay extends JPanel {
 	}
 
 	public void setBoard(Board b) {
-		// TODO Auto-generated method stub
 		this.board = b;
 	}
 }

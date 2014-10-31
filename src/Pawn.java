@@ -5,6 +5,7 @@ import javax.imageio.ImageIO;
 
 /**
  * Class to represent the puny pawn
+ * See superclass for method documentation
  * @author Zach
  *
  */
@@ -111,7 +112,7 @@ public class Pawn extends Piece {
 	}
 	@Override
 	public int getHeuristicScore(boolean playerAlignment){
-		int pieceScore = 2;
+		int pieceScore = 1;
     	if (this.alignment != playerAlignment){
     		pieceScore = -pieceScore;
     	}

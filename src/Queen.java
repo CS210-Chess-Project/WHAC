@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
 /**
- * Class to represent Queens.  Queens suck.
+ * Class to represent Queens.
+ * See superclass for method documentation
  * @author Zach
  *
  */
@@ -208,7 +209,7 @@ public class Queen extends Piece {
 	}
 	@Override
 	public int getHeuristicScore(boolean playerAlignment){
-		int pieceScore = -100;
+		int pieceScore = -25;
 		if (this.alignment != playerAlignment){
 			pieceScore = -pieceScore;
 		}

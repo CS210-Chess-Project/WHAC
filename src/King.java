@@ -6,6 +6,7 @@ import javax.imageio.ImageIO;
 
 /**
  * Class to represent Kings
+ * See superclass for method documentation
  * @author Zach
  *
  */
@@ -156,7 +157,7 @@ public class King extends Piece {
 	}
 	@Override
 	public int getHeuristicScore(boolean playerAlignment){
-		int pieceScore = 1;
+		int pieceScore = 2;
 		if (this.alignment != playerAlignment){
 			pieceScore = -pieceScore;
 		}

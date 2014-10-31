@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
 /**
- * Class to represent the horsey.  I for one think we should name him Secretariat.
+ * Class to represent the horsey.  His name is Secretariat.
+ * See superclass for method documentation
  * @author Zach
  *
  */
@@ -138,7 +139,7 @@ public class Knight extends Piece {
 	}
 	@Override
 	public int getHeuristicScore(boolean playerAlignment){
-		int pieceScore = -3;
+		int pieceScore = -5;
     	if (this.alignment != playerAlignment){
     		pieceScore = -pieceScore;
     	}

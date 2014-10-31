@@ -101,6 +101,11 @@ public class Board{
 
 	}
 
+	/**
+	 * Checks if the current color is stalemated
+	 * @param color boolean value (white=true)  (black=false)
+	 * @return true if stalemated, false otherwise
+	 */
 	public boolean isStalemateForColor(boolean color){
 		int pieceCount = 0;
 		if(color==Board.WHITE){
@@ -121,24 +126,33 @@ public class Board{
 		}
 	}
 
+	/**
+	 * Checks if the game is over for the specified color
+	 * Color-specific since stalemating depends on whose turn it is
+	 * @param whosTurn the color to check
+	 * @return true if the game is over, false otherwise
+	 */
 	public boolean isGameOver(boolean whosTurn){
-		if (this.isStalemateForColor(whosTurn)){
+		if (this.whiteCount() == 0 || this.blackCount()==0){
 			return true;
 		}
-		else if (this.whiteCount() == 0 || this.blackCount()==0){
+		else if (this.isStalemateForColor(whosTurn)){
 			return true;
 		}
+		
 		return false;
 	}
 
+	/**
+	 * Returns the "color" (Board.White or Board.Black) of the winning player
+	 * Should only be called after a game over
+	 * @return true if white is the winner, false otherwise
+	 */
 	public boolean determineWinningColor(){
-		int whiteCount = this.whiteCount();
-		int blackCount = this.blackCount();
-		//System.out.println("Determining winning color: \nWhite count: "+ whiteCount + "\nBlack Count: " + blackCount);
 		return this.whiteCount() < this.blackCount(); //returns true (WHITE) if white count is less than black count
 	}
 
-	//By nature, this isn't a terribly efficient method.  Try not to use it for anything performance-sensitive
+
 	/**
 	 * Checks if the current board has a capture move available for the selected Color
 	 * @param targetAlignment the color (true = White, false = Black) of the color to search
@@ -162,8 +176,12 @@ public class Board{
 		return false;
 	}
 
-	//moves a piece to a specified row and column
-	//really more of a helper method for makeMove that takes a move object
+	/**
+	 * Moves a piece on the board to a new location
+	 * @param p the piece to move
+	 * @param row the new row
+	 * @param col the new column
+	 */
 	public void makeMove(Piece p, int row, int col){
 		int[] location = p.getLocation(); //get current location
 		this.boardArray[location[0]][location[1]] = new EmptySpace(new int[]{location[0], location[1]});
@@ -174,7 +192,10 @@ public class Board{
 		endOfMoveProcessing();
 	}
 
-	//nicer, more cleanly packaged makeMove method that uses the Move class
+	/**
+	 * Makes a move using the Move class
+	 * @param m the Move object to make
+	 */
 	public void makeMove(Move m){
 		this.makeMove(m.getTargetPiece(), m.getRow(), m.getCol());		
 	}
@@ -209,9 +230,6 @@ public class Board{
 	 */
 	public Board getNextMove(boolean forColor, int lookAheadNumber){
 
-		//What I have here reads kind of strangely:
-		//it uses the minimax method to get back the index of the best choice from the list of next board states.
-
 		ArrayList<Board> potentialMoves = this.nextTurnStates(forColor);
 		if(potentialMoves.size()==1){
 			return potentialMoves.get(0);
@@ -233,9 +251,7 @@ public class Board{
 	}
 
 	/**
-	 * Utility method to help with the minimax search. 
-	 * The return is sorta convoluted.  It returns an integer array whose 0th element is the best score found, and whose 1st element is the index 
-	 * of the chosen move from nextMoveStates().
+	 * Utility method to help with the minimax search.
 	 *  
 	 * @param maximizing true if the caller is maximizing.  False if the caller is minimizig
 	 * @param lookahead how many moves to look ahead
@@ -254,10 +270,10 @@ public class Board{
 
 		ArrayList<Board> potentialMoves = this.nextTurnStates(alignment);
 		//reduce lookahead to satisfy time reqs if needed:
-		if(potentialMoves.size()>7  && lookahead > 3){
-			nextLookahead = lookahead - 2; //don't lookahead as far
-			
-		}
+//		if(potentialMoves.size()>7  && lookahead >= 3){ //
+//			nextLookahead = lookahead - 2; //don't lookahead as far
+//			System.out.println("Reducing lookahead");
+//		}
 
 		//if we are at a leaf, just return the current board's score
 		if (lookahead == 0){ //two stopping conditions
@@ -265,7 +281,7 @@ public class Board{
 		}
 		else{ //do minimax
 			//generate list of potential moves:
-			
+
 			if(potentialMoves.size()==0){
 				return new int[]{this.evaluateSelf(alignment), indexToReturn};
 			}
@@ -308,7 +324,7 @@ public class Board{
 					else{
 						int score;
 						Board potentialMove = potentialMoves.get(i);
-						if (potentialMove.isGameOver(!alignment)){ //if it's a game over, score takes on a max or min val
+						if (potentialMove.isGameOver(alignment)){ //if it's a game over, score takes on a max or min val
 							if (potentialMove.determineWinningColor()==!alignment){
 								score = Integer.MIN_VALUE;
 							}
@@ -397,7 +413,6 @@ public class Board{
 			}
 		}
 
-		//TODO: modify this to include number of moves in the score
 		//sum up individual piece scores
 		int boardScore = 0;
 		for(int row = 0; row < 5; row++){
@@ -412,7 +427,11 @@ public class Board{
 	// ------------------------- End Minimax related methods --------------------------------
 
 	//Utilities:
-	public int whiteCount(){
+	/**
+	 * gets the count of white pieces
+	 * @return the count of white pieces
+	 */
+	private int whiteCount(){
 		int counter = 0;
 		for(int col = 0; col < 5; col++){
 			for (int row = 0; row < 5; row++){
@@ -424,7 +443,12 @@ public class Board{
 
 		return counter;
 	}
-	public int blackCount(){
+	
+	/**
+	 * Gets the count of black pieces
+	 * @return the count of black pieces
+	 */
+	private int blackCount(){
 		int counter = 0;
 		for(int col = 0; col < 5; col++){
 			for (int row = 0; row < 5; row++){
@@ -436,7 +460,24 @@ public class Board{
 
 		return counter;
 	}
-
+	
+	/**
+	 * Gets the count of pieces of the specified color
+	 * @param forColor the color of pieces
+	 * @return the count of the pieces of the specified color
+	 */
+	private int pieceCount(boolean forColor){
+		int pieceCount = 0;
+		for(int col=0; col < 5; col++){
+			for(int row=0; row<5; row++){
+				if(!(boardArray[row][col] instanceof EmptySpace) && boardArray[row][col].alignment==forColor){
+					pieceCount++;
+				}
+			}
+		}
+		
+		return pieceCount;
+	}
 
 
 	//Testing methods:
@@ -463,31 +504,5 @@ public class Board{
 
 	public Piece getPieceAt(int row, int col){
 		return boardArray[row][col];
-	}
-
-	//test method
-	public static void main(String[] args){
-		Board b = new Board();
-
-
-		Piece[][] newBoard = new Piece[5][5];
-		for(int row = 0 ; row < 5; row++){
-			for(int col = 0; col< 5; col++){
-				newBoard[row][col] = new EmptySpace(new int[]{row, col});
-			}
-		}
-		
-		newBoard[2][2] = new King(new int[]{0,0,}, Board.BLACK, b);
-//		newBoard[1][0] = new Pawn(new int[]{1,0}, Board.BLACK, b);
-//		newBoard[1][2] = new Pawn(new int[]{1,2}, Board.BLACK, b);
-//		newBoard[3][3] = new Pawn(new int[]{1,0}, Board.BLACK, b);
-//		newBoard[2][2] = new Pawn(new int[]{2,2}, Board.WHITE, b);
-		newBoard[3][0] = new Pawn(new int[]{0,0}, Board.WHITE, b);
-//		b.setBoardArray(newBoard);
-		b.setBoardArray(newBoard);
-
-		System.out.println(b.isGameOver(false));
-		System.out.println(b.isGameOver(true));
-
 	}
 }

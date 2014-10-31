@@ -18,11 +18,21 @@ public abstract class Piece {
 	protected Board parentBoard;
 	protected int score;
 	
+	/**
+	 * Constructs a piece with the specified location
+	 * @param location the 2D array {row, col}
+	 */
 	public Piece(int[] location){
 		this.location = location;
 		loadImage();
 	}
 	
+	/**
+	 * Constructs a piece with the specified location, color, and parentBoard
+	 * @param location the 2D array {row, col}
+	 * @param alignment the boolean value indicating white or black
+	 * @param parentBd the Board object that this piece belongs to
+	 */
 	public Piece(int[] location, boolean alignment, Board parentBd){
 		this.location = location;
 		this.alignment = alignment;
@@ -30,8 +40,10 @@ public abstract class Piece {
 		loadImage();		
 	}
 	
-	
-	//generates list of available moves and returns the list.  We generate each time to make sure we get an up-to-date list
+	/**
+	 * Generates and returns a list of available moves for this piece
+	 * @return the list of available moves for this piece
+	 */
 	public ArrayList<Move> getAvailableMoves(){
 		this.generateAvailableMoves();
 		return availableMoves;
@@ -54,7 +66,9 @@ public abstract class Piece {
 		}
 	}
 
-	
+	/**
+	 * loads the resource image for the piece
+	 */
 	protected abstract void loadImage();
 
 	//  Getters/Setters
@@ -88,11 +102,6 @@ public abstract class Piece {
     	if (this.alignment != playerColor){
     		locationScore = -locationScore;
     	}
-    	String color = "Black";
-    	if(this.alignment){
-    		color = "White";
-    	}
-    	//System.out.println("Location score for " + color + " " + this.getClass() + " : " + locationScore);
     	return locationScore;
 	}
 
