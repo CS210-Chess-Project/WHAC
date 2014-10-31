@@ -55,7 +55,7 @@ public class ChessApp {
 
 	Piece selectedPiece;
 
-	static int maxLookAhead = 4;
+	static int maxLookAhead = 5;
 
 	//variables for global graphical components
 	private static BoardDisplay graphicalBoard;

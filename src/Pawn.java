@@ -112,7 +112,7 @@ public class Pawn extends Piece {
 	}
 	@Override
 	public int getHeuristicScore(boolean playerAlignment){
-		int pieceScore = 1;
+		int pieceScore = -1;
     	if (this.alignment != playerAlignment){
     		pieceScore = -pieceScore;
     	}

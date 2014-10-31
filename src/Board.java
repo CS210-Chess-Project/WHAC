@@ -289,7 +289,7 @@ public class Board{
 				currentValue = Integer.MIN_VALUE;
 				//go through the moves, pruning if possible:
 				for (int i = 0; i < potentialMoves.size(); i++){
-					if (thisNodesAlpha > thisNodesBeta){ //pruning condition
+					if (thisNodesAlpha >= thisNodesBeta){ //pruning condition
 						break;//prune the rest of the children (don't evaluate them)
 					}
 					else{
@@ -297,7 +297,9 @@ public class Board{
 						Board potentialMove = potentialMoves.get(i);
 						if (potentialMove.isGameOver(alignment)){ //if it's a game over, score takes on a max or min val
 							if (potentialMove.determineWinningColor()==alignment){
+								System.out.println("Detected winning move for CPU at ply " + lookahead);
 								score = Integer.MAX_VALUE;
+								System.out.println("Maximizing? " + maximizing);
 							}
 							else score= Integer.MIN_VALUE;
 						}
@@ -324,16 +326,19 @@ public class Board{
 					else{
 						int score;
 						Board potentialMove = potentialMoves.get(i);
-						if (potentialMove.isGameOver(alignment)){ //if it's a game over, score takes on a max or min val
+						if (potentialMove.isGameOver(!alignment)){ //if it's a game over, score takes on a max or min val
 							if (potentialMove.determineWinningColor()==!alignment){
 								score = Integer.MIN_VALUE;
 							}
-							else score= Integer.MAX_VALUE;
+							else{
+								score= Integer.MAX_VALUE; System.out.println("Detected winning move for CPU at ply " + lookahead);
+								System.out.println("Maximizing? " + maximizing);
+							}
 						}
 						else{ //otherwise we do a max search (other players turn)
 							score = potentialMoves.get(i).minimax(alignment, true, nextLookahead, thisNodesAlpha, thisNodesBeta)[0];
 						}
-						if (score <= currentValue){ //pull up condition
+						if (score < currentValue){ //pull up condition
 							currentValue = score;
 							thisNodesBeta = score;
 							indexToReturn = i;
